@@ -1,6 +1,11 @@
-package cgoexample
+package main
 
 /*
+#cgo CFLAGS: -I .
+#cgo LDFLAGS: -L . -lfoo
+
+#include "foo.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -16,4 +21,10 @@ func Example() {
 	cs := C.CString("Hello from stdio\n")
 	C.myprint(cs)
 	C.free(unsafe.Pointer(cs))
+}
+
+func main() {
+	Example();
+
+	C.ACFunction();
 }
