@@ -2,3 +2,4 @@ _obj
 foo.o 
 go-c-interface-test
 libfoo.a
+build

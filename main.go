@@ -2,9 +2,9 @@ package main
 
 /*
 #cgo CFLAGS: -I .
-#cgo LDFLAGS: -L . -lfoo
+#cgo LDFLAGS: -L${SRCDIR}/build -ldbengine
 
-#include "foo.h"
+#include "src/dbengine.h"
 
 #include <stdio.h>
 #include <stdlib.h>
