@@ -6,7 +6,7 @@ project(dbengine)
 include(ExternalProject)
 
 message (STATUS "Adding Boost ${BOOST_VERSION} as an external project.")
-
+set(CMAKE_CXX_STANDARD 11)
 set(BOOST_VERSION 1.71.0)
 
 if (WIN32)
@@ -18,7 +18,8 @@ elseif (UNIX)
     set (BOOST_BUILD_CMD ./${BOOST_GIT_REPO_DIR}/b2)
 endif ()
 
-
+# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+# SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
 ExternalProject_Add (
     boost
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/boost
@@ -28,7 +29,7 @@ ExternalProject_Add (
     BUILD_IN_SOURCE 1
     UPDATE_COMMAND ${BOOST_BOOTSTRAP_CMD}
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND ${BOOST_BUILD_CMD} --with-system link=static install --prefix=${CMAKE_CURRENT_BINARY_DIR}/boostinstall
+    BUILD_COMMAND ${BOOST_BUILD_CMD} toolset=clang cxxflags=-stdlib=libc++ linkflags=-stdlib=libc++ --with-system link=static install --prefix=${CMAKE_CURRENT_BINARY_DIR}/boostinstall
     INSTALL_COMMAND ""
     LOG_DOWNLOAD 1
     LOG_UPDATE 1
@@ -41,7 +42,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/boostinstall/include)
 link_directories(${CMAKE_CURRENT_BINARY_DIR}/boostinstall/lib)
 
 set(SOURCE_FILES
-    src/dbengine.cpp)
+    src/dbengine.cpp
+    src/SqlQuery.cpp)
 
 ADD_LIBRARY(${PROJECT_NAME} ${SOURCE_FILES})
 

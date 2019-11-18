@@ -1,30 +1,36 @@
 package main
 
 /*
-#cgo CFLAGS: -I .
-#cgo LDFLAGS: -L${SRCDIR}/build -ldbengine
+#cgo CFLAGS: -I . -stdlib=libc++
+#cgo LDFLAGS: -L${SRCDIR}/build -ldbengine -L${SRCDIR}/build/boostinstall/lib -lboost_system -lstdc++
 
 #include "src/dbengine.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-void myprint(char* s) {
-	printf("%s\n", s);
-}
 */
 import "C"
 
-import "unsafe"
-
-func Example() {
-	cs := C.CString("Hello from stdio\n")
-	C.myprint(cs)
-	C.free(unsafe.Pointer(cs))
-}
+import (
+	"fmt"
+	"unsafe"
+)
 
 func main() {
-	Example();
+	//test call c method in comment
+	queryStr := C.CString("select * form dual\n")
+	defer C.free(unsafe.Pointer(queryStr))
 
-	C.ACFunction();
+	queryUUID := C.CString("")
+	defer C.free(unsafe.Pointer(queryUUID))
+
+	// C.myprint(queryStr)
+
+	C.submitQuery(queryStr, queryUUID)
+
+	fmt.Println("UUID is: " + C.GoString(queryUUID))
+
+	//call library function form dbengine lib
+	C.ACFunction()
 }
