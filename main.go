@@ -8,12 +8,18 @@ package main
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
+int testref(const char * uuid, int *count) {
+	int err = columnCount(uuid, count);
+	return *count;//
+}
 */
 import "C"
 
 import (
 	"fmt"
+	"strconv"
 	"unsafe"
 )
 
@@ -29,7 +35,11 @@ func main() {
 
 	C.submitQuery(queryStr, queryUUID)
 
-	fmt.Println("UUID is: " + C.GoString(queryUUID))
+	var colCount C.int = 4884;
+	var x = C.testref(queryUUID, (*C.int)(unsafe.Pointer(&colCount)));
+	// C.columnCount(queryUUID, (*C.int)(&colCount))
+
+	fmt.Println("UUID is: " + C.GoString(queryUUID), " row count = " + strconv.Itoa(int(x)))
 
 	//call library function form dbengine lib
 	C.ACFunction()

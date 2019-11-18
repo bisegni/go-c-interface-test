@@ -18,8 +18,6 @@ elseif (UNIX)
     set (BOOST_BUILD_CMD ./${BOOST_GIT_REPO_DIR}/b2)
 endif ()
 
-# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-# SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
 ExternalProject_Add (
     boost
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/boost
@@ -43,7 +41,8 @@ link_directories(${CMAKE_CURRENT_BINARY_DIR}/boostinstall/lib)
 
 set(SOURCE_FILES
     src/dbengine.cpp
-    src/SqlQuery.cpp)
+    src/SqlQuery.cpp
+    src/SqlColumnValue.cpp)
 
 ADD_LIBRARY(${PROJECT_NAME} ${SOURCE_FILES})
 

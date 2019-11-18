@@ -5,6 +5,9 @@
 extern "C" {
 #endif
 
+#include "SqlTypes.h"
+
+#include <stdint.h>
 
 void ACFunction();
 
@@ -14,7 +17,9 @@ void deinit();
 
 //! Submit query to engine implementation and return identification
 int submitQuery(const char *query, char *uuid);
-
+int columnCount(const char *uuid, int *column_count);
+// int getColumnType(const char *uuid, SQlType type[]);
+// int hasRow(const char *uuid, bool **has);
 
 #ifdef __cplusplus
 }
