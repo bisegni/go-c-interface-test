@@ -9,11 +9,6 @@ package main
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-
-int testref(const char * uuid, int *count) {
-	int err = columnCount(uuid, count);
-	return *count;//
-}
 */
 import "C"
 
@@ -28,18 +23,17 @@ func main() {
 	queryStr := C.CString("select * form dual\n")
 	defer C.free(unsafe.Pointer(queryStr))
 
-	queryUUID := C.CString("")
-	defer C.free(unsafe.Pointer(queryUUID))
+	queryUUID := make([]byte, 40)
 
 	// C.myprint(queryStr)
 
-	C.submitQuery(queryStr, queryUUID)
+	C.submitQuery(queryStr, (*C.char)(unsafe.Pointer(&queryUUID[0])))
+	fmt.Println("UUID is: " + string(queryUUID))
 
-	var colCount C.int = 4884;
-	var x = C.testref(queryUUID, (*C.int)(unsafe.Pointer(&colCount)));
-	// C.columnCount(queryUUID, (*C.int)(&colCount))
+	var colCount C.int = 0;
+	C.columnCount((*C.char)(unsafe.Pointer(&queryUUID[0])), (*C.int)(&colCount));
 
-	fmt.Println("UUID is: " + C.GoString(queryUUID), " row count = " + strconv.Itoa(int(x)))
+	fmt.Println("UUID is: " + string(queryUUID), " row count = " + strconv.Itoa(int(colCount)))
 
 	//call library function form dbengine lib
 	C.ACFunction()
