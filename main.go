@@ -10,7 +10,7 @@ package main
 #include <stdlib.h>
 #include <stdint.h>
 */
-import "C"
+// import "C"
 
 import (
 	"fmt"
