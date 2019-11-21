@@ -12,6 +12,18 @@
             "program": "${workspaceRoot}",
             "env": {},
             "args": []
-        }
+        },{
+            "name": "TestFileColReader",
+            "type": "go",
+            "request": "launch",
+            "mode": "test",
+            "remotePath": "",
+            "port": 2345,
+            "host": "127.0.0.1",
+            "program": "${workspaceRoot}/query/fileColReader.go",
+            "env": {},
+            "args": [],
+            "showLog": false
+        }    
     ]
 }

@@ -12,29 +12,23 @@ package main
 */
 // import "C"
 
-import (
-	"fmt"
-	"strconv"
-	"unsafe"
-)
-
 func main() {
 	//test call c method in comment
-	queryStr := C.CString("select * form dual\n")
-	defer C.free(unsafe.Pointer(queryStr))
+	// queryStr := C.CString("select * form dual\n")
+	// defer C.free(unsafe.Pointer(queryStr))
 
-	queryUUID := make([]byte, 40)
+	// queryUUID := make([]byte, 40)
 
-	// C.myprint(queryStr)
+	// // C.myprint(queryStr)
 
-	C.submitQuery(queryStr, (*C.char)(unsafe.Pointer(&queryUUID[0])))
-	fmt.Println("UUID is: " + string(queryUUID))
+	// C.submitQuery(queryStr, (*C.char)(unsafe.Pointer(&queryUUID[0])))
+	// fmt.Println("UUID is: " + string(queryUUID))
 
-	var colCount C.int = 0;
-	C.columnCount((*C.char)(unsafe.Pointer(&queryUUID[0])), (*C.int)(&colCount));
+	// var colCount C.int = 0;
+	// C.columnCount((*C.char)(unsafe.Pointer(&queryUUID[0])), (*C.int)(&colCount));
 
-	fmt.Println("UUID is: " + string(queryUUID), " row count = " + strconv.Itoa(int(colCount)))
+	// fmt.Println("UUID is: " + string(queryUUID), " row count = " + strconv.Itoa(int(colCount)))
 
-	//call library function form dbengine lib
-	C.ACFunction()
+	// //call library function form dbengine lib
+	// C.ACFunction()
 }

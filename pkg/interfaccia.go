@@ -57,7 +57,7 @@ func (q *QueryExecution) GetResultsetColNames() ([]string, error) {
 
 // GetResultsetColTypes return the list of column types extracted by the executed query
 // Is the clone of resultset.Columns() provided by the standard mysql drive
-func (q *QueryExecution) GetResultsetColTypes() ([]reflect.Kind, error) {
+func (q *QueryExecution) GetResultsetColTypes() ([]*ColumnType, error) {
 	res := make([]*ColumnType, q.ColCount)
 	for index := 0; index < q.ColCount; index++ {
 		c := ColumnType{
