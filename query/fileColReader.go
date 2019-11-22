@@ -7,13 +7,24 @@ import (
 	"reflect"
 )
 
-// FileColReader is the class that load a file for a column and
-// read all elemen one per time or buffered
+// FileColReader read the values of a column from a file
+/*
+	The colType insturct the struct to selecte wich type it need to
+	search on binary files
+*/
 type FileColReader struct {
 	fileName string
 	colType  reflect.Kind
 	file     *os.File
 	err      error
+}
+
+// check if the file is present
+func (r *FileColReader) checkFile() error {
+	if r.file == nil {
+		return os.ErrNotExist
+	}
+	return nil
 }
 
 // NewFileColReader allocate new instance
@@ -44,13 +55,6 @@ func (r *FileColReader) Close() error {
 		log.Printf("Error while opening %s file  with error %s\n", r.fileName, err)
 	}
 	return err
-}
-
-func (r *FileColReader) checkFile() error {
-	if r.file == nil {
-		return os.ErrNotExist
-	}
-	return nil
 }
 
 // ReadNext read an int32 from file
