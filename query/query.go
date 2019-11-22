@@ -6,5 +6,5 @@ type ColReader interface {
 	Close() error
 
 	//Private methods
-	ReadInt32() (int32, error)
+	ReadNext() (interface{}, error)
 }
