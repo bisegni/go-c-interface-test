@@ -106,8 +106,8 @@ func (rf *RandomForwarder) GetSchema() (*[]ColDescription, error) {
 }
 
 // GetRowCount return the number of row found
-func (rf *RandomForwarder) GetRowCount() int64 {
-	return rf.rowCount
+func (rf *RandomForwarder) GetRowCount() (int64, error) {
+	return rf.rowCount, nil
 }
 
 // Close close the excutor and delete all file

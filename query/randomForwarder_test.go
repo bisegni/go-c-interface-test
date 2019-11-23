@@ -37,7 +37,9 @@ func TestCreateRandomTableAndReadColumn(t *testing.T) {
 				foundRow++
 			}
 		}
-		assert.Assert(t, r.GetRowCount() == foundRow)
+		r, e := r.GetRowCount()
+		assert.Assert(t, !isError(e))
+		assert.Assert(t, r == foundRow)
 		scanErr = fcr.Close()
 		assert.Assert(t, !isError(scanErr))
 	}

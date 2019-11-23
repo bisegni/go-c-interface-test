@@ -11,16 +11,16 @@ type ColReader interface {
 	ReadNext() (interface{}, error)
 }
 
-// Forwarder abstractio for the query submition implementation su sublayer
+// Forwarder abstraction for the query submition implementation to a sublayer
 type Forwarder interface {
 	// Execute start execution of the query on the backend
 	Execute() error
 
-	// Wait for the result
-	Wait() (bool, error)
-
 	// GetSchema the schema ofr the reuslt of the query
 	GetSchema() (*[]ColDescription, error)
+
+	// GetRowCount return the row that have been found
+	GetRowCount() (int64, error)
 
 	// Close the executor
 	Close()
@@ -43,8 +43,8 @@ type Executor interface {
 	// GetSchema the schema ofr the reuslt of the query
 	GetSchema() (*[]ColDescription, error)
 
-	// RowCount return the number of found row
-	RowCount() (int64, error)
+	// GetRowCount return the number of found row
+	GeRowCount() (int64, error)
 
 	// NextRow return next row or error if all row are terminated
 	NextRow() (*[]interface{}, error)

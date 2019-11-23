@@ -2,14 +2,13 @@ package query
 
 import (
 	"encoding/binary"
-	"gotest.tools/assert"
-	"io/ioutil"
-	"log"
 	"math/rand"
 	"os"
 	"reflect"
 	"testing"
 	"time"
+
+	"gotest.tools/assert"
 )
 
 func isError(err error) bool {
@@ -47,12 +46,6 @@ func randByType(f *os.File, t reflect.Kind) []interface{} {
 		binary.Write(f, binary.LittleEndian, generatedIntArray[i])
 	}
 	return generatedIntArray
-}
-
-func TestMain(m *testing.M) {
-	//disable log during tests
-	log.SetOutput(ioutil.Discard)
-	os.Exit(m.Run())
 }
 
 func TestOpenNoFoundFile(t *testing.T) {
