@@ -19,10 +19,16 @@ jobs:
     - name: Get dependencies
       run: |
         go get -v -t -d ./...
-        if [ -f Gopkg.toml ]; then
-            curl https://raw.githubusercontent.com/golang/dep/5eb98b36dfc3aaa3df8d808b90ae3baad80f83b6/install.sh | sh
-            dep ensure
-        fi
-
+        # if [ -f Gopkg.toml ]; then
+        #     curl https://raw.githubusercontent.com/golang/dep/5eb98b36dfc3aaa3df8d808b90ae3baad80f83b6/install.sh | sh
+        #     dep ensure
+        # fi
+        go get -d -u github.com/golang/dep
+        cd $(go env GOPATH)/src/github.com/golang/dep
+        DEP_LATEST=$(git describe --abbrev=0 --tags)
+        git checkout $DEP_LATEST
+        go install -ldflags="-X main.version=$DEP_LATEST" ./cmd/dep
+        git checkout master
+        dep ensure
     - name: Build
       run: go build -v .
