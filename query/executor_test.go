@@ -16,7 +16,15 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestOpenRandoExecutor(t *testing.T) {
+func TestNextWithoutExecute(t *testing.T) {
+	//disable log during tests
+	r := NewFileExecutorWithRGA("executor_a")
+
+	_, err := r.NextRow()
+	assert.Equal(t, err, ErrFENoColumnReader)
+}
+
+func TestQuerySuccessfull(t *testing.T) {
 	r := NewFileExecutorWithRGA("executor_a")
 
 	//execute query

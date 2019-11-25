@@ -8,6 +8,8 @@ import (
 )
 
 var (
+	// ErrFENoForward the forwarder has not been set
+	ErrFENoForward = errors.New("No Forwarder has been set")
 	//ErrFENoColumnReader column reader are not be created, perhaps wait method has not been create
 	ErrFENoColumnReader = errors.New("No Column reader found")
 	// ErrFEColumnReadError error has ben found during fetch data from a column reader
@@ -85,6 +87,11 @@ func (fe *FileExecutor) GeRowCount() (int64, error) {
 func (fe *FileExecutor) NextRow() (*[]interface{}, error) {
 	var err error
 	var val interface{}
+
+	if fe.forwarder == nil {
+		return nil, ErrFENoForward
+	}
+
 	// scan each next row of col read and for the row
 	schema, err := fe.forwarder.GetSchema()
 	if err != nil {
