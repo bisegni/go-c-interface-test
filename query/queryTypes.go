@@ -5,6 +5,12 @@ import (
 	"reflect"
 )
 
+// ColDescription conains the column specification
+type ColDescription struct {
+	Name string       `json:"name"`
+	Kind reflect.Kind `json:"kind"`
+}
+
 // ColReader abstract interface for column readedr implementation
 type ColReader interface {
 	Open() error
@@ -14,8 +20,25 @@ type ColReader interface {
 	ReadNext() (interface{}, error)
 }
 
-// TableSchemaManagement interface to folder creation implementation
-type TableSchemaManagement interface {
+var (
+	// ErrCWTBadType wrong tipy passed to column writer
+	ErrCWTBadType = errors.New("Wrong tipy passed to column writer")
+)
+
+// ColWriter abstract interface for column writer implementation
+type ColWriter interface {
+	Open() error
+	Close() error
+	Writer(interface{}) error
+}
+
+var (
+	// ErrTMTbaleAlredyExists The table already exists
+	ErrTMTbaleAlredyExists = errors.New("The table already exists")
+)
+
+// TableManagement interface to folder creation implementation
+type TableManagement interface {
 	// Create a table
 	/*
 		if table is alredy preset an error is issue
@@ -30,15 +53,10 @@ type TableSchemaManagement interface {
 
 	// GetSchema return the table schema
 	GetSchema() (*[]ColDescription, error)
-}
 
-type TableDataManageent interface {
+	// InsertRow add new row within the table
+	InsertRow(*[]interface{})
 }
-
-var (
-	// ErrTMTbaleAlredyExists the forwarder has not been set
-	ErrTMTbaleAlredyExists = errors.New("The table already exists")
-)
 
 // Forwarder abstraction for the query submition implementation to a sublayer
 type Forwarder interface {
@@ -53,12 +71,6 @@ type Forwarder interface {
 
 	// Close the executor
 	Close()
-}
-
-// ColDescription describe a column
-type ColDescription struct {
-	Name string       `json:"name"`
-	Kind reflect.Kind `json:"kind"`
 }
 
 // Executor abstract interface for query execution

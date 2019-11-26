@@ -10,7 +10,7 @@ import (
 )
 
 func TestFileTableCreation(t *testing.T) {
-	r := NewFileTableSchemaManagement("data", "table_1")
+	r := NewFileTableManagement("data", "table_1")
 	schema := []ColDescription{
 		ColDescription{
 			"col_1",

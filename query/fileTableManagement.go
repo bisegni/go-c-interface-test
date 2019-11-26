@@ -7,20 +7,20 @@ import (
 	"path/filepath"
 )
 
-// FileTableSchemaManagement manage a table using folder and files
-type FileTableSchemaManagement struct {
+// FileTableManagement manage a table using folder and files
+type FileTableManagement struct {
 	//path where store the result
 	tableFolderPath string
 }
 
-// NewFileTableSchemaManagement allocate new instance
-func NewFileTableSchemaManagement(_path string, _name string) *FileTableSchemaManagement {
-	return &FileTableSchemaManagement{
+// NewFileTableManagement allocate new instance
+func NewFileTableManagement(_path string, _name string) *FileTableManagement {
+	return &FileTableManagement{
 		tableFolderPath: filepath.Join(_path, _name),
 	}
 }
 
-func (ft *FileTableSchemaManagement) folderCheck(path string) (bool, error) {
+func (ft *FileTableManagement) folderCheck(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
 		return true, nil
@@ -32,7 +32,7 @@ func (ft *FileTableSchemaManagement) folderCheck(path string) (bool, error) {
 }
 
 // Create impl.
-func (ft *FileTableSchemaManagement) Create(schema *[]ColDescription) error {
+func (ft *FileTableManagement) Create(schema *[]ColDescription) error {
 	exists, err := ft.folderCheck(ft.tableFolderPath)
 	if err != nil {
 		return err
@@ -57,13 +57,13 @@ func (ft *FileTableSchemaManagement) Create(schema *[]ColDescription) error {
 }
 
 // Delete impl.
-func (ft *FileTableSchemaManagement) Delete() error {
+func (ft *FileTableManagement) Delete() error {
 	os.RemoveAll(ft.tableFolderPath)
 	return nil
 }
 
 // GetSchema impl.
-func (ft *FileTableSchemaManagement) GetSchema() (*[]ColDescription, error) {
+func (ft *FileTableManagement) GetSchema() (*[]ColDescription, error) {
 	var result []ColDescription
 	jsonFile, err := os.Open(filepath.Join(ft.tableFolderPath, "metadata.json"))
 	// if we os.Open returns an error then handle it
@@ -78,4 +78,9 @@ func (ft *FileTableSchemaManagement) GetSchema() (*[]ColDescription, error) {
 	}
 	json.Unmarshal(byteValue, &result)
 	return &result, nil
+}
+
+// InsertRow impl.
+func (ft *FileTableManagement) InsertRow(*[]interface{}) {
+
 }
