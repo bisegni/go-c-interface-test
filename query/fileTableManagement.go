@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
 )
 
 // FileTableManagement manage a table using folder and files
@@ -82,5 +83,10 @@ func (ft *FileTableManagement) GetSchema() (*[]ColDescription, error) {
 
 // OpenTable impl.
 func (ft *FileTableManagement) OpenTable() (*Table, error) {
-	return nil, nil
+	schema, err := ft.GetSchema()
+	if err != nil {
+		return nil, err
+	}
+	t, err := NewFileTable(ft.tableFolderPath, schema)
+	return reflect.ValueOf(t).Interface().(*Table), err
 }
