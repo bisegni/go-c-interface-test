@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"reflect"
 )
 
 var (
@@ -37,7 +36,7 @@ type FileResultSet struct {
 	//contains the schema of the table/virtual table
 	schema []ColDescription
 
-	columnReader []*ColReader
+	columnReader []ColReader
 
 	//point to current row fetched with HasNext method
 	currentRow []interface{}
@@ -74,7 +73,7 @@ func (frs *FileResultSet) init() error {
 		fcr := NewFileColReader(fileName, col.Kind)
 		err = fcr.Open()
 		if err == nil {
-			frs.columnReader = append(frs.columnReader, reflect.ValueOf(fcr).Interface().(*ColReader))
+			frs.columnReader = append(frs.columnReader, fcr)
 		} else {
 			frs.columnReader = nil
 			return err
@@ -102,7 +101,7 @@ func (frs *FileResultSet) HasNext() (bool, error) {
 	}
 	//we can read next row
 	for i, cr := range frs.columnReader {
-		val, err = (*cr).ReadNext()
+		val, err = cr.ReadNext()
 		if err != nil {
 			frs.currentRow = nil
 			hasNext = false

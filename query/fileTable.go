@@ -2,7 +2,6 @@ package query
 
 import (
 	"fmt"
-	"reflect"
 )
 
 // FileTable manage a data of a table using file for each column
@@ -12,7 +11,7 @@ type FileTable struct {
 
 	schema *[]ColDescription
 
-	columnWriter []*ColWriter
+	columnWriter []ColWriter
 }
 
 // NewFileTable allocate new instance
@@ -32,7 +31,7 @@ func (ft *FileTable) init() error {
 		fcw := NewFileColWriter(fileName, col.Kind)
 		err := fcw.Open()
 		if err == nil {
-			ft.columnWriter = append(ft.columnWriter, reflect.ValueOf(fcw).Interface().(*ColWriter))
+			ft.columnWriter = append(ft.columnWriter, fcw)
 		} else {
 			ft.columnWriter = nil
 			return err
@@ -44,7 +43,7 @@ func (ft *FileTable) init() error {
 // InsertRow impl.
 func (ft *FileTable) InsertRow(newRow *[]interface{}) error {
 	for i, v := range *newRow {
-		err := (*ft.columnWriter[i]).Write(v)
+		err := ft.columnWriter[i].Write(v)
 		if err != nil {
 			return err
 		}

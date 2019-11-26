@@ -20,7 +20,7 @@ type ColReader interface {
 
 var (
 	// ErrCWTBadType wrong tipy passed to column writer
-	ErrCWTBadType = errors.New("Wrong tipe passed to column writer")
+	ErrCWTBadType = errors.New("Wrong type passed to column writer")
 )
 
 // ColWriter abstract interface for column writer implementation
