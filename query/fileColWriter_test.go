@@ -30,6 +30,22 @@ func TestCWOpenFoundFile(t *testing.T) {
 	assert.Assert(t, !isError(err))
 }
 
+func TestCWWriteWrongTypeOnInsert(t *testing.T) {
+	//create file for test
+	r := NewFileColWriter("file_data.bin", reflect.Bool)
+	e := r.Open()
+	defer func() {
+		r.Close()
+		os.Remove("file_data.bin")
+	}()
+
+	assert.Assert(t, !isError(e))
+
+	i32 := rand.Int31()
+	e = r.Write(i32)
+	assert.Assert(t, isError(e))
+}
+
 func TestCWWriteBool(t *testing.T) {
 	//create file for test
 	var generatedIntArray [1000]bool
