@@ -31,8 +31,11 @@ type ColWriter interface {
 }
 
 var (
-	// ErrTMTbaleAlredyExists The table already exists
-	ErrTMTbaleAlredyExists = errors.New("The table already exists")
+	// ErrTMTableAlredyExists The table already exists
+	ErrTMTableAlredyExists = errors.New("The table already exists")
+
+	// ErrTMSChemaMetadataNotFount The metadata information has not been found
+	ErrTMSChemaMetadataNotFount = errors.New("The metadata information has not been found")
 )
 
 // ResultSet is the abstraction of a cursor
@@ -42,8 +45,17 @@ type ResultSet interface {
 	Next() (*[]interface{}, error)
 }
 
-// Table interface to folder creation implementation
+// Table tabl einterface for data operation abstraction
 type Table interface {
+	// InsertRow add new row within the table
+	InsertRow(*[]interface{}) error
+
+	// return rwo iterator for all row in query
+	SelectAll() (*ResultSet, error)
+}
+
+// TableManagement interface to folder management implementation
+type TableManagement interface {
 	// Create a table
 	/*
 		if table is alredy preset an error is issue
@@ -59,11 +71,8 @@ type Table interface {
 	// GetSchema return the table schema
 	GetSchema() (*[]ColDescription, error)
 
-	// InsertRow add new row within the table
-	InsertRow(*[]interface{}) error
-
-	// return rwo iterator for all row in query
-	SelectAll() (*ResultSet, error)
+	//Open table for data operations
+	OpenTable() (*Table, error)
 }
 
 // Forwarder abstraction for the query submition implementation to a sublayer

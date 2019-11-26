@@ -39,13 +39,13 @@ func (ft *FileTableManagement) Create(schema *[]ColDescription) error {
 	}
 
 	if exists {
-		return ErrTMTbaleAlredyExists
+		return ErrTMTableAlredyExists
 	}
 
 	//create folder and metadati
 	err = os.MkdirAll(ft.tableFolderPath, os.ModeDir|os.ModePerm)
 	if err != nil {
-		return err
+		return ErrTMSChemaMetadataNotFount
 	}
 
 	//create schema file in json
@@ -80,7 +80,7 @@ func (ft *FileTableManagement) GetSchema() (*[]ColDescription, error) {
 	return &result, nil
 }
 
-// InsertRow impl.
-func (ft *FileTableManagement) InsertRow(*[]interface{}) {
-
+// OpenTable impl.
+func (ft *FileTableManagement) OpenTable() (*Table, error) {
+	return nil, nil
 }
