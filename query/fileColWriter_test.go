@@ -13,8 +13,9 @@ import (
 
 func TestCWOpenNoFoundFile(t *testing.T) {
 	w := NewFileColWriter("file_not_present.bin", reflect.Bool)
+	defer os.Remove("file_not_present.bin")
 	err := w.Open()
-	assert.Assert(t, isError(err))
+	assert.Assert(t, !isError(err))
 }
 
 func TestCWOpenFoundFile(t *testing.T) {
