@@ -15,8 +15,6 @@ type ColDescription struct {
 type ColReader interface {
 	Open() error
 	Close() error
-
-	//Private methods
 	ReadNext() (interface{}, error)
 }
 
@@ -37,8 +35,15 @@ var (
 	ErrTMTbaleAlredyExists = errors.New("The table already exists")
 )
 
-// TableManagement interface to folder creation implementation
-type TableManagement interface {
+// ResultSet is the abstraction of a cursor
+type ResultSet interface {
+	GetSchema() (*[]ColDescription, error)
+	HasNext() (bool, error)
+	Next() (*[]interface{}, error)
+}
+
+// Table interface to folder creation implementation
+type Table interface {
 	// Create a table
 	/*
 		if table is alredy preset an error is issue
@@ -55,7 +60,10 @@ type TableManagement interface {
 	GetSchema() (*[]ColDescription, error)
 
 	// InsertRow add new row within the table
-	InsertRow(*[]interface{})
+	InsertRow(*[]interface{}) error
+
+	// return rwo iterator for all row in query
+	SelectAll() (*ResultSet, error)
 }
 
 // Forwarder abstraction for the query submition implementation to a sublayer
