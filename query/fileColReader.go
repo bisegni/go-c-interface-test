@@ -70,32 +70,26 @@ func (r *FileColReader) ReadNext() (interface{}, error) {
 		var b bool = false
 		err = binary.Read(r.file, binary.LittleEndian, &b)
 		result = b
-		break
 	case reflect.Int32:
 		var i32 int32 = 0
 		err = binary.Read(r.file, binary.LittleEndian, &i32)
 		result = i32
-		break
 	case reflect.Int64:
 		var i64 int64 = 0
 		err = binary.Read(r.file, binary.LittleEndian, &i64)
 		result = i64
-		break
 	case reflect.Float32:
 		var f32 float32 = 0
 		err = binary.Read(r.file, binary.LittleEndian, &f32)
 		result = f32
-		break
 	case reflect.Float64:
 		var f64 float64 = 0
 		err = binary.Read(r.file, binary.LittleEndian, &f64)
 		result = f64
-		break
 	case reflect.String:
 		// var i64 int64 = 0
 		// binary.Read(r.file, binary.LittleEndian, &i64)
 		// result = i64
-		break
 	}
 	return result, err
 }

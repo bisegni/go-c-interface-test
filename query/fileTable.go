@@ -23,6 +23,9 @@ func NewFileTable(tableFolderPath string, schema *[]ColDescription) (*FileTable,
 }
 
 func (ft *FileTable) init() error {
+	if ft.schema == nil {
+		return ErrNoSchemaInformation
+	}
 	// load column writer for write operation
 	for _, col := range *ft.schema {
 		fileName := fmt.Sprintf("%s/%s", ft.tableFolderPath, col.Name)
@@ -40,10 +43,16 @@ func (ft *FileTable) init() error {
 
 // InsertRow impl.
 func (ft *FileTable) InsertRow(newRow *[]interface{}) error {
+	for i, v := range *newRow {
+		err := (*ft.columnWriter[i]).Write(v)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 // SelectAll impl.
-func (ft *FileTable) SelectAll() (*ResultSet, error) {
-	return nil, nil
+func (ft *FileTable) SelectAll() (*FileResultSet, error) {
+	return NewFileResultSet(ft.tableFolderPath)
 }

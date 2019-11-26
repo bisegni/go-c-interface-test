@@ -80,7 +80,6 @@ func (w *FileColWriter) Write(data interface{}) error {
 		// var i64 int64 = 0
 		// binary.Read(r.file, binary.LittleEndian, &i64)
 		// result = i64
-		break
 	}
 	return ErrCWTBadType
 }

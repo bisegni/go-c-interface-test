@@ -38,19 +38,14 @@ func (rf *RandomForwarder) Execute() error {
 		switch colTypeInde {
 		case 0:
 			rf.colDesc = append(rf.colDesc, ColDescription{"coll_" + strconv.Itoa(i), reflect.Bool})
-			break
 		case 1:
 			rf.colDesc = append(rf.colDesc, ColDescription{"coll_" + strconv.Itoa(i), reflect.Int32})
-			break
 		case 2:
 			rf.colDesc = append(rf.colDesc, ColDescription{"coll_" + strconv.Itoa(i), reflect.Int64})
-			break
 		case 3:
 			rf.colDesc = append(rf.colDesc, ColDescription{"coll_" + strconv.Itoa(i), reflect.Float32})
-			break
 		case 4:
 			rf.colDesc = append(rf.colDesc, ColDescription{"coll_" + strconv.Itoa(i), reflect.Float64})
-			break
 		}
 	}
 
@@ -76,23 +71,18 @@ func (rf *RandomForwarder) Execute() error {
 			case reflect.Bool:
 				var b bool = (rand.Intn(2) != 0)
 				err = binary.Write(f, binary.LittleEndian, &b)
-				break
 			case reflect.Int32:
 				var i32 int32 = rand.Int31()
 				err = binary.Write(f, binary.LittleEndian, &i32)
-				break
 			case reflect.Int64:
 				var i64 int64 = rand.Int63()
 				err = binary.Write(f, binary.LittleEndian, &i64)
-				break
 			case reflect.Float32:
 				var f32 float32 = rand.Float32()
 				err = binary.Write(f, binary.LittleEndian, &f32)
-				break
 			case reflect.Float64:
 				var f64 float64 = rand.Float64()
 				err = binary.Write(f, binary.LittleEndian, &f64)
-				break
 			}
 		}
 		f.Close()

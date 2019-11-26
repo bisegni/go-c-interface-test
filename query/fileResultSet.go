@@ -48,8 +48,8 @@ type FileResultSet struct {
 path param is the path where data is stored
 table table is the name of a table or a virtual table that is the result of a query
 */
-func NewFileResultSet(path string, table string) (*FileResultSet, error) {
-	result := FileResultSet{resultFolderPath: filepath.Join(path, table)}
+func NewFileResultSet(resultFolderPath string) (*FileResultSet, error) {
+	result := FileResultSet{resultFolderPath: resultFolderPath}
 	err := result.init()
 	return &result, err
 }

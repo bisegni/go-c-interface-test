@@ -22,25 +22,18 @@ func randByType(f *os.File, t reflect.Kind) []interface{} {
 	for i := 0; i < 1000; i++ {
 		switch t {
 		case reflect.Bool:
-
-			break
 		case reflect.Int32:
 			generatedIntArray[i] = rand.Int31()
-			break
 		case reflect.Int64:
 			generatedIntArray[i] = rand.Int63()
-			break
 		case reflect.Float32:
 			generatedIntArray[i] = rand.Float32()
-			break
 		case reflect.Float64:
 			generatedIntArray[i] = rand.Float64()
-			break
 		case reflect.String:
 			// var i64 int64 = 0
 			// binary.Read(r.file, binary.LittleEndian, &i64)
 			// result = i64
-			break
 		}
 
 		binary.Write(f, binary.LittleEndian, generatedIntArray[i])

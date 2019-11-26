@@ -27,16 +27,8 @@ var (
 type ColWriter interface {
 	Open() error
 	Close() error
-	Writer(interface{}) error
+	Write(interface{}) error
 }
-
-var (
-	// ErrTMTableAlredyExists The table already exists
-	ErrTMTableAlredyExists = errors.New("The table already exists")
-
-	// ErrTMSChemaMetadataNotFount The metadata information has not been found
-	ErrTMSChemaMetadataNotFount = errors.New("The metadata information has not been found")
-)
 
 // ResultSet is the abstraction of a cursor
 type ResultSet interface {
@@ -44,6 +36,11 @@ type ResultSet interface {
 	HasNext() (bool, error)
 	Next() (*[]interface{}, error)
 }
+
+var (
+	// ErrNoSchemaInformation The table has no schema informatio
+	ErrNoSchemaInformation = errors.New("The table has no schema information")
+)
 
 // Table tabl einterface for data operation abstraction
 type Table interface {
@@ -53,6 +50,14 @@ type Table interface {
 	// return rwo iterator for all row in query
 	SelectAll() (*ResultSet, error)
 }
+
+var (
+	// ErrTMTableAlredyExists The table already exists
+	ErrTMTableAlredyExists = errors.New("The table already exists")
+
+	// ErrTMSChemaMetadataNotFount The metadata information has not been found
+	ErrTMSChemaMetadataNotFount = errors.New("The metadata information has not been found")
+)
 
 // TableManagement interface to folder management implementation
 type TableManagement interface {
