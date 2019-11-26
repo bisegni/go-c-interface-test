@@ -78,7 +78,7 @@ func TestCWWriteBool(t *testing.T) {
 		}
 		assert.Equal(t, generatedIntArray[i], b)
 	}
-	assert.Equal(t, i, 1000)
+	assert.Assert(t, (i == 1000))
 	file.Close()
 }
 
