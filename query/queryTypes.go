@@ -1,6 +1,9 @@
 package query
 
-import "reflect"
+import (
+	"errors"
+	"reflect"
+)
 
 // ColReader abstract interface for column readedr implementation
 type ColReader interface {
@@ -10,6 +13,32 @@ type ColReader interface {
 	//Private methods
 	ReadNext() (interface{}, error)
 }
+
+// TableSchemaManagement interface to folder creation implementation
+type TableSchemaManagement interface {
+	// Create a table
+	/*
+		if table is alredy preset an error is issue
+	*/
+	Create(*[]ColDescription) error
+
+	// Delete the table structure
+	/*
+		Intere table structure will be deleted
+	*/
+	Delete() error
+
+	// GetSchema return the table schema
+	GetSchema() (*[]ColDescription, error)
+}
+
+type TableDataManageent interface {
+}
+
+var (
+	// ErrTMTbaleAlredyExists the forwarder has not been set
+	ErrTMTbaleAlredyExists = errors.New("The table already exists")
+)
 
 // Forwarder abstraction for the query submition implementation to a sublayer
 type Forwarder interface {
@@ -28,8 +57,8 @@ type Forwarder interface {
 
 // ColDescription describe a column
 type ColDescription struct {
-	Name string
-	Kind reflect.Kind
+	Name string       `json:"name"`
+	Kind reflect.Kind `json:"kind"`
 }
 
 // Executor abstract interface for query execution
