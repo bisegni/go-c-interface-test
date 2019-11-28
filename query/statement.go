@@ -3,25 +3,30 @@ package query
 // InsertStatement manage a data of a table using file for each column
 type InsertStatement struct {
 	//path where store the result
-	schema *[]ColDescription
+	schema []ColDescription
 
 	columnWriter []ColWriter
 }
 
 // NewFileTable allocate new instance
 func newInsertStatement(schema *[]ColDescription, columnWriter []ColWriter) *InsertStatement {
-	return &InsertStatement{schema: schema, columnWriter: columnWriter}
+	return &InsertStatement{schema: *schema, columnWriter: columnWriter}
 }
 
 // InsertRow impl.
-func (ft *FileTable) InsertRow(newRow *[]interface{}) error {
+func (it *InsertStatement) InsertRow(newRow *[]interface{}) error {
 	for i, v := range *newRow {
-		err := ft.columnWriter[i].Write(v)
+		err := it.columnWriter[i].Write(v)
 		if err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+// GetSchema impl.
+func (it *InsertStatement) GetSchema() *[]ColDescription {
+	return &it.schema
 }
 
 // SelectStatement impl.
@@ -37,6 +42,6 @@ func newSelectStatement(schema *[]ColDescription, columnReader []ColReader) *Sel
 }
 
 // SelectAll impl.
-func (st *SelectStatement) SelectAll() (*FileResultSet, error) {
+func (st *SelectStatement) SelectAll() (ResultSet, error) {
 	return newFileResultSet(st.schema, st.columnReader), nil
 }

@@ -42,15 +42,6 @@ var (
 	ErrNoSchemaInformation = errors.New("The table has no schema information")
 )
 
-// Table tabl einterface for data operation abstraction
-type Table interface {
-	// InsertRow add new row within the table
-	InsertRow(*[]interface{}) error
-
-	// return rwo iterator for all row in query
-	SelectAll() (*ResultSet, error)
-}
-
 var (
 	// ErrTMTableAlredyExists The table already exists
 	ErrTMTableAlredyExists = errors.New("The table already exists")
@@ -59,8 +50,8 @@ var (
 	ErrTMSChemaMetadataNotFount = errors.New("The metadata information has not been found")
 )
 
-// TableManagement interface to folder management implementation
-type TableManagement interface {
+// Table interface to folder management implementation
+type Table interface {
 	// Create a table
 	/*
 		if table is alredy preset an error is issue
@@ -76,42 +67,9 @@ type TableManagement interface {
 	// GetSchema return the table schema
 	GetSchema() (*[]ColDescription, error)
 
-	//Open table for data operations
-	OpenTable() (*Table, error)
-}
+	//OpenInsertStatement create new insert statement
+	OpenInsertStatement() (*InsertStatement, error)
 
-// Forwarder abstraction for the query submition implementation to a sublayer
-type Forwarder interface {
-	// Execute start execution of the query on the backend
-	Execute() error
-
-	// GetSchema the schema ofr the reuslt of the query
-	GetSchema() (*[]ColDescription, error)
-
-	// GetRowCount return the row that have been found
-	GetRowCount() (int64, error)
-
-	// Close the executor
-	Close()
-}
-
-// Executor abstract interface for query execution
-type Executor interface {
-	// Execute start execution of the query on the backend
-	Execute() error
-
-	// Wait for the result
-	Wait() (bool, error)
-
-	// GetSchema the schema ofr the reuslt of the query
-	GetSchema() (*[]ColDescription, error)
-
-	// GetRowCount return the number of found row
-	GeRowCount() (int64, error)
-
-	// NextRow return next row or error if all row are terminated
-	NextRow() (*[]interface{}, error)
-
-	// Close the executor
-	Close()
+	//OpenSelectStatement create new select statement
+	OpenSelectStatement() (*SelectStatement, error)
 }

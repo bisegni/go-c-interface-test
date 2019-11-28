@@ -44,7 +44,7 @@ func (aft *AbstractFileTable) ensureFolder() error {
 	}
 
 	if exists {
-		return ErrTMTableAlredyExists
+		return nil
 	}
 
 	//create folder and metadati
