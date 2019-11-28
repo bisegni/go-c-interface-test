@@ -29,8 +29,10 @@ func (ft *FileTable) GetSchema() (*[]ColDescription, error) {
 
 // OpenInsertStatement impl.
 func (ft *FileTable) OpenInsertStatement() (*InsertStatement, error) {
-	err := ft.loadSchema()
-	if err != nil {
+	if err := ft.loadSchema(); err != nil {
+		return nil, err
+	}
+	if err := ft.allocateColumnWriter(); err != nil {
 		return nil, err
 	}
 	return newInsertStatement(&ft.schema, ft.columnWriter), nil
@@ -38,8 +40,10 @@ func (ft *FileTable) OpenInsertStatement() (*InsertStatement, error) {
 
 // OpenSelectStatement impl.
 func (ft *FileTable) OpenSelectStatement() (*SelectStatement, error) {
-	err := ft.loadSchema()
-	if err != nil {
+	if err := ft.loadSchema(); err != nil {
+		return nil, err
+	}
+	if err := ft.allocateColumnReader(); err != nil {
 		return nil, err
 	}
 	return newSelectStatement(&ft.schema, ft.columnReader), nil

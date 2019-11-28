@@ -226,3 +226,28 @@ func TestCWWriteFloat64(t *testing.T) {
 	assert.Assert(t, i == 1000)
 	file.Close()
 }
+
+func TestAppend(t *testing.T) {
+	r := NewFileColWriter("file_data.bin", reflect.Bool)
+	e := r.Open()
+	assert.Assert(t, !isError(e))
+	r.Write(false)
+
+	r1 := NewFileColWriter("file_data.bin", reflect.Bool)
+	defer r1.Close()
+	e = r1.Open()
+	assert.Assert(t, !isError(e))
+	r1.Write(true)
+
+	fileReadTest, e := os.Open("file_data.bin")
+	assert.Assert(t, !isError(e))
+	defer fileReadTest.Close()
+
+	var readedBool bool
+	e = binary.Read(fileReadTest, binary.LittleEndian, &readedBool)
+	assert.Assert(t, !isError(e))
+	assert.Equal(t, readedBool, false)
+	e = binary.Read(fileReadTest, binary.LittleEndian, &readedBool)
+	assert.Assert(t, !isError(e))
+	assert.Equal(t, readedBool, true)
+}

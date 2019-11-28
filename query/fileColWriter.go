@@ -28,7 +28,7 @@ func NewFileColWriter(_fileName string, _kind reflect.Kind) *FileColWriter {
 // Open the file associated to the column
 func (w *FileColWriter) Open() error {
 	var err error
-	w.file, err = os.Create(w.fileName)
+	w.file, err = os.OpenFile(w.fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm)
 
 	if err != nil {
 		w.file = nil

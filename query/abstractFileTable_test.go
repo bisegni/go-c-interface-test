@@ -11,7 +11,7 @@ import (
 func TestAbstractTableCreateFolderCheckAndDelete(t *testing.T) {
 	var e error
 	at := newAbstractFileTable("data/table_1")
-
+	defer os.RemoveAll("data")
 	//check for folder that is not present
 	b, e := at.folderCheck()
 	assert.Assert(t, !isError(e))
@@ -34,11 +34,10 @@ func TestAbstractTableCreateFolderCheckAndDelete(t *testing.T) {
 	b, e = at.folderCheck()
 	assert.Assert(t, !isError(e))
 	assert.Equal(t, b, false)
-
-	os.RemoveAll("data")
 }
 
 func TestCreateSchema(t *testing.T) {
+	defer os.RemoveAll("data")
 	schema := []ColDescription{
 		ColDescription{
 			"col_1",
@@ -63,7 +62,8 @@ func TestCreateSchema(t *testing.T) {
 	assert.Assert(t, reflect.DeepEqual(schema, at.schema))
 }
 
-func TestCreateWriter(t *testing.T) {
+func TestCreateWriterAndReader(t *testing.T) {
+	defer os.RemoveAll("data")
 	schema := []ColDescription{
 		ColDescription{
 			"col_1",
@@ -92,31 +92,6 @@ func TestCreateWriter(t *testing.T) {
 
 	assert.Assert(t, at.columnWriter != nil)
 	assert.Assert(t, len(at.columnWriter) == 2)
-}
-
-func TestCreateReader(t *testing.T) {
-	schema := []ColDescription{
-		ColDescription{
-			"col_1",
-			reflect.Int32},
-		ColDescription{
-			"col_2",
-			reflect.Int64},
-	}
-	//create table abstraction
-	at := newAbstractFileTable("data/table_1")
-
-	//ensure folder
-	assert.Assert(t, !isError(at.ensureFolder()))
-
-	//write scehma
-	assert.Assert(t, !isError(at.writeSchema(&schema)))
-
-	//load schema
-	assert.Assert(t, !isError(at.loadSchema()))
-
-	//comapre two schema
-	assert.Assert(t, reflect.DeepEqual(schema, at.schema))
 
 	//load writer
 	assert.Assert(t, !isError(at.allocateColumnReader()))
