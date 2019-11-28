@@ -1,61 +1,37 @@
 package query
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"reflect"
 	"testing"
-
-	"gotest.tools/assert"
 )
 
-func TestFileTableNoFolder(t *testing.T) {
-	_, err := NewFileTable("bad-path/inesistent-fodler", nil)
-	assert.Assert(t, isError(err))
-}
+func TestFileTableCreation(t *testing.T) {
+	// r := NewFileTableManagement("data", "table_1")
+	// schema := []ColDescription{
+	// 	ColDescription{
+	// 		"col_1",
+	// 		reflect.Int32},
+	// 	ColDescription{
+	// 		"col_2",
+	// 		reflect.Int64},
+	// }
+	// j, err := json.Marshal(schema)
+	// assert.Assert(t, !isError(err))
 
-func TestFileTableInsert(t *testing.T) {
-	dirpath := "data/reuslt-1"
-	defer os.RemoveAll("data")
+	// t.Logf("Create table with schema %v", string(j))
+	// err = r.Create(&schema)
+	// t.Logf("Read table schema %v", string(j))
+	// readedSchema, err := r.GetSchema()
+	// assert.Assert(t, !isError(err))
 
-	os.MkdirAll(dirpath, os.ModePerm)
+	// j, err = json.Marshal(schema)
+	// assert.Assert(t, !isError(err))
+	// t.Logf("Readed schema %v", string(j))
+	// assert.Assert(t, reflect.DeepEqual(schema, *readedSchema))
 
-	schema := []ColDescription{
-		ColDescription{
-			"col_1",
-			reflect.Int32},
-		ColDescription{
-			"col_2",
-			reflect.Int64},
-	}
-	j, err := json.Marshal(schema)
-	assert.Assert(t, !isError(err))
-	ioutil.WriteFile(filepath.Join(dirpath, "metadata.json"), j, 0644)
+	// //delete table
+	// t.Logf("Delete table %s", r.tableFolderPath)
+	// err = r.Delete()
+	// assert.Assert(t, !isError(err))
 
-	ft, err := NewFileTable(dirpath, &schema)
-	assert.Assert(t, !isError(err))
-
-	for i := 0; i < 100; i++ {
-		row := []interface{}{int32(123), int64(456)}
-		err = ft.InsertRow(&row)
-		assert.Assert(t, !isError(err))
-	}
-
-	//get resultset
-	rs, err := ft.SelectAll()
-	assert.Assert(t, !isError(err))
-	var work bool = true
-	for work {
-		work, err = rs.HasNext()
-		assert.Assert(t, !isError(err))
-		if !work {
-			break
-		}
-		row, err := rs.Next()
-		assert.Assert(t, !isError(err))
-		assert.Equal(t, (*row)[0], int32(123))
-		assert.Equal(t, (*row)[1], int64(456))
-	}
+	// os.RemoveAll("data")
 }

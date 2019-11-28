@@ -1,57 +1,46 @@
 package query
 
 import (
-	"fmt"
+	"path/filepath"
 )
 
-// FileTable manage a data of a table using file for each column
+// FileTable manage a table using folder and files
 type FileTable struct {
-	//path where store the result
-	tableFolderPath string
-
-	schema *[]ColDescription
-
-	columnWriter []ColWriter
+	AbstractFileTable
 }
 
 // NewFileTable allocate new instance
-func NewFileTable(tableFolderPath string, schema *[]ColDescription) (*FileTable, error) {
-	ft := FileTable{tableFolderPath: tableFolderPath, schema: schema}
-	err := ft.init()
-	return &ft, err
+func NewFileTable(_path string, _name string) *FileTable {
+	return &FileTable{
+		AbstractFileTable: newAbstractFileTable(filepath.Join(_path, _name)),
+	}
 }
 
-func (ft *FileTable) init() error {
-	if ft.schema == nil {
-		return ErrNoSchemaInformation
-	}
-	// load column writer for write operation
-	for _, col := range *ft.schema {
-		fileName := fmt.Sprintf("%s/%s", ft.tableFolderPath, col.Name)
-		fcw := NewFileColWriter(fileName, col.Kind)
-		err := fcw.Open()
-		if err == nil {
-			ft.columnWriter = append(ft.columnWriter, fcw)
-		} else {
-			ft.columnWriter = nil
-			return err
-		}
-	}
-	return nil
+// Create impl.
+func (ft *FileTable) Create(schema *[]ColDescription) error {
+	return ft.writeSchema(schema)
 }
 
-// InsertRow impl.
-func (ft *FileTable) InsertRow(newRow *[]interface{}) error {
-	for i, v := range *newRow {
-		err := ft.columnWriter[i].Write(v)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+// GetSchema impl.
+func (ft *FileTable) GetSchema() (*[]ColDescription, error) {
+	err := ft.loadSchema()
+	return &ft.schema, err
 }
 
-// SelectAll impl.
-func (ft *FileTable) SelectAll() (*FileResultSet, error) {
-	return NewFileResultSet(ft.tableFolderPath)
+// OpenInsertStatement impl.
+func (ft *FileTable) OpenInsertStatement() (*InsertStatement, error) {
+	err := ft.loadSchema()
+	if err != nil {
+		return nil, err
+	}
+	return newInsertStatement(&ft.schema, ft.columnWriter), nil
+}
+
+// OpenSelectStatement impl.
+func (ft *FileTable) OpenSelectStatement() (*SelectStatement, error) {
+	err := ft.loadSchema()
+	if err != nil {
+		return nil, err
+	}
+	return newSelectStatement(&ft.schema, ft.columnReader), nil
 }
