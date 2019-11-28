@@ -50,7 +50,7 @@ func (rf *RandomForwarder) Execute() error {
 	}
 
 	// generate random row number
-	rf.rowCount = rand.Int63n(1000)
+	rf.rowCount = 1000 //rand.Int63n(1000)
 
 	//generate the column file with random value up to 1000 elements
 	for _, colDesc := range rf.colDesc {
