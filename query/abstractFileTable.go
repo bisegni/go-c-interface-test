@@ -27,14 +27,7 @@ func newAbstractFileTable(fullPath string) AbstractFileTable {
 }
 
 func (aft *AbstractFileTable) folderCheck() (bool, error) {
-	_, err := os.Stat(aft.fullPath)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return true, err
+	return checkFilexExists(aft.fullPath)
 }
 
 func (aft *AbstractFileTable) ensureFolder() error {
