@@ -3,6 +3,7 @@ package query
 import (
 	"math/rand"
 	"reflect"
+	"strconv"
 	"time"
 )
 
@@ -11,6 +12,32 @@ type RandomDataGenerator struct {
 	//path where store the result
 	insertStatement *InsertStatement
 	rowCount        int64
+}
+
+func newRandomSchema() *[]ColDescription {
+	var cd []ColDescription
+	//generate random number of column
+	rand := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	//geenrate random type
+	colNum := rand.Intn(9) + 1
+
+	for i := 0; i < colNum; i++ {
+		colTypeInde := rand.Intn(4)
+		switch colTypeInde {
+		case 0:
+			cd = append(cd, ColDescription{"coll_" + strconv.Itoa(i), reflect.Bool})
+		case 1:
+			cd = append(cd, ColDescription{"coll_" + strconv.Itoa(i), reflect.Int32})
+		case 2:
+			cd = append(cd, ColDescription{"coll_" + strconv.Itoa(i), reflect.Int64})
+		case 3:
+			cd = append(cd, ColDescription{"coll_" + strconv.Itoa(i), reflect.Float32})
+		case 4:
+			cd = append(cd, ColDescription{"coll_" + strconv.Itoa(i), reflect.Float64})
+		}
+	}
+	return &cd
 }
 
 // NewRandomData allocate new instance
