@@ -24,7 +24,7 @@ var (
 )
 
 //chunk base file size
-const columnChunkFileSize = 1024 * 1024 * 1000 // 1Mbyte file size
+const columnChunkFileSize = 1024 * 1024 // 1Mbyte file size
 
 // ColWriter abstract interface for column writer implementation
 type ColWriter interface {
