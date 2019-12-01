@@ -32,15 +32,16 @@ func checkForMaxSize(f *os.File, maxSize int64) (bool, error) {
 }
 
 type rotateWriter struct {
-	lock         sync.Mutex
-	path         string
-	Filename     string `json:"name"`
-	CurrentIndex int32  `json:"cur_index"`
-	currentFile  *os.File
+	lock          sync.Mutex
+	path          string
+	chunkInfoFile string
+	Filename      string `json:"name"`
+	CurrentIndex  int32  `json:"cur_index"`
+	currentFile   *os.File
 }
 
 func newRotateWriter(path string, filename string) (w *rotateWriter, err error) {
-	w = &rotateWriter{path: path, Filename: filename}
+	w = &rotateWriter{path: path, Filename: filename, chunkInfoFile: filepath.Join(path, fmt.Sprintf("%s.chunk", filename))}
 	err = w.init()
 	if err != nil {
 		return nil, err
@@ -58,7 +59,15 @@ func (w *rotateWriter) init() (err error) {
 	if err != nil {
 		return ErrTMSChemaMetadataNotFount
 	}
-	jsonFile, err := os.Open(filepath.Join(w.path, fmt.Sprintf("%s.chunk", w.Filename)))
+	exists, err := checkFilexExists(w.chunkInfoFile)
+	if err != nil {
+		return
+	}
+
+	if !exists {
+		return nil
+	}
+	jsonFile, err := os.Open(w.chunkInfoFile)
 	// if we os.Open returns an error then handle it
 	if err != nil {
 		return
