@@ -5,21 +5,28 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
+	"sync"
 )
 
 // AbstractFileTable define the base work on a table that is implementaed with fodler and files
 type AbstractFileTable struct {
-	//path where store the result
+	// path where store the result
 	fullPath string
 
-	//contains the schema of the table/virtual table
+	// contains the schema of the table/virtual table
 	schema []ColDescription
 
-	//the reader for the column
+	// the reader for the column
 	columnReader []ColReader
 
-	//the writer for the column
+	// the writer for the column
 	columnWriter []ColWriter
+
+	// Statistic column value
+	stat StatisticResult
+	// statistic muthex
+	statMux sync.Mutex
 }
 
 func newAbstractFileTable(fullPath string) AbstractFileTable {
@@ -127,4 +134,24 @@ func (aft *AbstractFileTable) loadSchema() error {
 func (aft *AbstractFileTable) Delete() error {
 	os.RemoveAll(aft.fullPath)
 	return nil
+}
+
+func (aft *AbstractFileTable) addStat(col *ColDescription, colValue interface{}) {
+	aft.statMux.Lock()
+	aft.stat.column = append(aft.stat.column, *col)
+	aft.stat.values = append(aft.stat.values, colValue)
+	aft.statMux.Unlock()
+}
+
+// GetStatistics impl.
+func (aft *AbstractFileTable) GetStatistics() *StatisticResult {
+	aft.statMux.Lock()
+	var stat StatisticResult
+	stat.column = []ColDescription{{"AbstractFileTable", reflect.Bool}}
+	stat.column = append(stat.column, aft.stat.column...)
+
+	stat.values = []interface{}{true}
+	stat.values = append(stat.values, aft.stat.values...)
+	aft.statMux.Unlock()
+	return &stat
 }

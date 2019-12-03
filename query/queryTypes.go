@@ -53,6 +53,12 @@ var (
 	ErrTMSChemaMetadataNotFount = errors.New("The metadata information has not been found")
 )
 
+// StatisticResult return the statics values for the table
+type StatisticResult struct {
+	column []ColDescription
+	values []interface{}
+}
+
 // Table interface to folder management implementation
 type Table interface {
 	// Create a table
@@ -69,6 +75,9 @@ type Table interface {
 
 	// GetSchema return the table schema
 	GetSchema() (*[]ColDescription, error)
+
+	// GetStatistics return the statistics for the table
+	GetStatistics() *StatisticResult
 
 	//OpenInsertStatement create new insert statement
 	OpenInsertStatement() (*InsertStatement, error)
