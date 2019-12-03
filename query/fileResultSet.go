@@ -66,7 +66,8 @@ func (frs *FileResultSet) HasNext() (bool, error) {
 		if err != nil {
 			frs.currentRow = nil
 			hasNext = false
-			if err != io.EOF {
+			if err != io.EOF &&
+				err != ErrRotateReaderNoMoreChunk {
 				err = ErrFRSColumnReadError
 			} else {
 				// no error on end of file will be forwarded
