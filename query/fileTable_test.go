@@ -10,7 +10,10 @@ import (
 
 func TestManagement(t *testing.T) {
 	r := NewFileTable("data", "table_1")
-	defer os.RemoveAll("data")
+	defer func() {
+		r.Close()
+		os.RemoveAll("data") // change value at the very last moment
+	}()
 
 	schema := []ColDescription{
 		ColDescription{
@@ -32,7 +35,10 @@ func TestManagement(t *testing.T) {
 
 func TestInsert(t *testing.T) {
 	r := NewFileTable("data", "table_1")
-	defer os.RemoveAll("data")
+	defer func() {
+		r.Close()
+		os.RemoveAll("data") // change value at the very last moment
+	}()
 
 	schema := []ColDescription{
 		ColDescription{

@@ -84,4 +84,7 @@ type Table interface {
 
 	//OpenSelectStatement create new select statement
 	OpenSelectStatement() (*SelectStatement, error)
+
+	// Close the table access file
+	Close()
 }

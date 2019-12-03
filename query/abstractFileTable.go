@@ -155,3 +155,20 @@ func (aft *AbstractFileTable) GetStatistics() *StatisticResult {
 	aft.statMux.Unlock()
 	return &stat
 }
+
+// Close all structure for table managment
+func (aft *AbstractFileTable) Close() {
+	if aft.columnReader != nil {
+		for _, cr := range aft.columnReader {
+			cr.Close()
+		}
+		aft.columnReader = nil
+	}
+
+	if aft.columnWriter != nil {
+		for _, cw := range aft.columnWriter {
+			cw.Close()
+		}
+		aft.columnWriter = nil
+	}
+}

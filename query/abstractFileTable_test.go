@@ -11,7 +11,10 @@ import (
 func TestAbstractTableCreateFolderCheckAndDelete(t *testing.T) {
 	var e error
 	at := newAbstractFileTable("data/table_1")
-	defer os.RemoveAll("data")
+	defer func() {
+		at.Close()
+		os.RemoveAll("data") // change value at the very last moment
+	}()
 	//check for folder that is not present
 	b, e := at.folderCheck()
 	assert.Assert(t, !isError(e))
@@ -37,7 +40,6 @@ func TestAbstractTableCreateFolderCheckAndDelete(t *testing.T) {
 }
 
 func TestCreateSchema(t *testing.T) {
-	defer os.RemoveAll("data")
 	schema := []ColDescription{
 		ColDescription{
 			"col_1",
@@ -48,7 +50,10 @@ func TestCreateSchema(t *testing.T) {
 	}
 	//create table abstraction
 	at := newAbstractFileTable("data/table_1")
-
+	defer func() {
+		at.Close()
+		os.RemoveAll("data") // change value at the very last moment
+	}()
 	//ensure folder
 	assert.Assert(t, !isError(at.ensureFolder()))
 
@@ -63,7 +68,6 @@ func TestCreateSchema(t *testing.T) {
 }
 
 func TestCreateWriterAndReader(t *testing.T) {
-	defer os.RemoveAll("data")
 	schema := []ColDescription{
 		ColDescription{
 			"col_1",
@@ -74,7 +78,10 @@ func TestCreateWriterAndReader(t *testing.T) {
 	}
 	//create table abstraction
 	at := newAbstractFileTable("data/table_1")
-
+	defer func() {
+		at.Close()
+		os.RemoveAll("data") // change value at the very last moment
+	}()
 	//ensure folder
 	assert.Assert(t, !isError(at.ensureFolder()))
 
@@ -98,4 +105,14 @@ func TestCreateWriterAndReader(t *testing.T) {
 
 	assert.Assert(t, at.columnReader != nil)
 	assert.Assert(t, len(at.columnReader) == 2)
+}
+
+func TestAbstractTableStatistic(t testing.T) {
+	at := newAbstractFileTable("data/table_1")
+	defer func() {
+		at.Close()
+		os.RemoveAll("data") // change value at the very last moment
+	}()
+
+	stat := at.GetStatistics()
 }
