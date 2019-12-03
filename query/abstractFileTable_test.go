@@ -107,7 +107,7 @@ func TestCreateWriterAndReader(t *testing.T) {
 	assert.Assert(t, len(at.columnReader) == 2)
 }
 
-func TestAbstractTableStatistic(t testing.T) {
+func TestAbstractTableStatistic(t *testing.T) {
 	at := newAbstractFileTable("data/table_1")
 	defer func() {
 		at.Close()
@@ -115,4 +115,18 @@ func TestAbstractTableStatistic(t testing.T) {
 	}()
 
 	stat := at.GetStatistics()
+	assert.Assert(t, len(stat.column) == 1)
+	assert.Assert(t, len(stat.values) == 1)
+	at.addStat(&ColDescription{"a", reflect.Bool}, true)
+	at.addStat(&ColDescription{"b", reflect.Int32}, 12345)
+
+	stat = at.GetStatistics()
+	assert.Assert(t, len(stat.column) == 3)
+	assert.Assert(t, stat.column[1].Name == "a")
+	assert.Assert(t, stat.column[1].Kind == reflect.Bool)
+	assert.Assert(t, stat.column[2].Name == "b")
+	assert.Assert(t, stat.column[2].Kind == reflect.Int32)
+	assert.Assert(t, len(stat.values) == 3)
+	assert.Assert(t, stat.values[1] == true)
+	assert.Assert(t, stat.values[2] == 12345)
 }
