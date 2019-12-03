@@ -77,8 +77,7 @@ func (aft *AbstractFileTable) allocateColumnReader() error {
 	}
 	// load column writer for write operation
 	for _, col := range aft.schema {
-		fileName := filepath.Join(aft.fullPath, col.Name)
-		r := NewFileColReader(fileName, col.Kind)
+		r := NewFileColReader(aft.fullPath, col.Name, col.Kind)
 		err := r.Open()
 		if err == nil {
 			aft.columnReader = append(aft.columnReader, r)
