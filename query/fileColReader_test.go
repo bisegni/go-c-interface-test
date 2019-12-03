@@ -42,44 +42,30 @@ func randByType(f *os.File, t reflect.Kind) []interface{} {
 }
 
 func TestOpenNoFoundFile(t *testing.T) {
-	r := NewFileColReader("file_not_present.bin", reflect.Bool)
+	defer os.RemoveAll("data")
+	r := NewFileColReader("data", "file_not_present.bin", reflect.Bool)
 	err := r.Open()
 	assert.Assert(t, isError(err))
 }
 
-func TestOpenFoundFile(t *testing.T) {
-	//create file for test
-	var file, err = os.Create("file_present.bin")
-	assert.Assert(t, !isError(err))
-	defer func() {
-		file.Close()
-		os.Remove("file_present.bin")
-	}()
-	r := NewFileColReader("file_present.bin", reflect.Bool)
-	err = r.Open()
-	assert.Assert(t, !isError(err))
-}
-
 func TestReadBool(t *testing.T) {
+	defer os.RemoveAll("data")
 	//create file for test
 	var generatedIntArray [1000]bool
-	var file, err = os.Create("file_bool.bin")
+	fcw := NewFileColWriter("data", "file_bool", reflect.Bool)
+	err := fcw.Open()
 	assert.Assert(t, !isError(err))
-	defer func() {
-		file.Close()
-		os.Remove("file_bool.bin")
-	}()
 
 	//write some intre data
 	rand := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	for i := 0; i < 1000; i++ {
 		generatedIntArray[i] = (rand.Intn(2) != 0)
-		binary.Write(file, binary.LittleEndian, generatedIntArray[i])
+		fcw.Write(generatedIntArray[i])
 	}
-	file.Close()
+	fcw.Close()
 
-	r := NewFileColReader("file_bool.bin", reflect.Bool)
+	r := NewFileColReader("data", "file_bool", reflect.Bool)
 	err = r.Open()
 	assert.Assert(t, !isError(err))
 
@@ -95,25 +81,23 @@ func TestReadBool(t *testing.T) {
 }
 
 func TestReadInt32(t *testing.T) {
+	defer os.RemoveAll("data")
 	//create file for test
 	var generatedIntArray [1000]int32
-	var file, err = os.Create("file_int32.bin")
-	assert.Assert(t, !isError(err))
-	defer func() {
-		file.Close()
-		os.Remove("file_int32.bin")
-	}()
 
 	//write some intre data
 	rand := rand.New(rand.NewSource(time.Now().UnixNano()))
+	fcw := NewFileColWriter("data", "file_int32", reflect.Int32)
+	err := fcw.Open()
+	assert.Assert(t, !isError(err))
 
 	for i := 0; i < 1000; i++ {
 		generatedIntArray[i] = rand.Int31()
-		binary.Write(file, binary.LittleEndian, generatedIntArray[i])
+		fcw.Write(generatedIntArray[i])
 	}
-	file.Close()
+	fcw.Close()
 
-	r := NewFileColReader("file_int32.bin", reflect.Int32)
+	r := NewFileColReader("data", "file_int32", reflect.Int32)
 	err = r.Open()
 	assert.Assert(t, !isError(err))
 
@@ -129,25 +113,23 @@ func TestReadInt32(t *testing.T) {
 }
 
 func TestReadInt64(t *testing.T) {
+	defer os.RemoveAll("data")
 	//create file for test
 	var generatedIntArray [1000]int64
-	var file, err = os.Create("file_int64.bin")
+	fcw := NewFileColWriter("data", "file_int64", reflect.Int64)
+	err := fcw.Open()
 	assert.Assert(t, !isError(err))
-	defer func() {
-		file.Close()
-		os.Remove("file_int64.bin")
-	}()
 
 	//write some intre data
 	rand := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	for i := 0; i < 1000; i++ {
 		generatedIntArray[i] = rand.Int63()
-		binary.Write(file, binary.LittleEndian, generatedIntArray[i])
+		fcw.Write(generatedIntArray[i])
 	}
-	file.Close()
+	fcw.Close()
 
-	r := NewFileColReader("file_int64.bin", reflect.Int64)
+	r := NewFileColReader("data", "file_int64", reflect.Int64)
 	err = r.Open()
 	assert.Assert(t, !isError(err))
 
@@ -163,25 +145,23 @@ func TestReadInt64(t *testing.T) {
 }
 
 func TestReadFloat32(t *testing.T) {
+	defer os.RemoveAll("data")
 	//create file for test
 	var generatedIntArray [1000]float32
-	var file, err = os.Create("file_float32.bin")
+	fcw := NewFileColWriter("data", "file_float32", reflect.Float32)
+	err := fcw.Open()
 	assert.Assert(t, !isError(err))
-	defer func() {
-		file.Close()
-		os.Remove("file_float32.bin")
-	}()
 
 	//write some intre data
 	rand := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	for i := 0; i < 1000; i++ {
 		generatedIntArray[i] = rand.Float32()
-		binary.Write(file, binary.LittleEndian, generatedIntArray[i])
+		fcw.Write(generatedIntArray[i])
 	}
-	file.Close()
+	fcw.Close()
 
-	r := NewFileColReader("file_float32.bin", reflect.Float32)
+	r := NewFileColReader("data", "file_float32", reflect.Float32)
 	err = r.Open()
 	assert.Assert(t, !isError(err))
 
@@ -197,25 +177,23 @@ func TestReadFloat32(t *testing.T) {
 }
 
 func TestReadFloat64(t *testing.T) {
+	defer os.RemoveAll("data")
 	//create file for test
 	var generatedIntArray [1000]float64
-	var file, err = os.Create("file_float64.bin")
+	fcw := NewFileColWriter("data", "file_float64", reflect.Float64)
+	err := fcw.Open()
 	assert.Assert(t, !isError(err))
-	defer func() {
-		file.Close()
-		os.Remove("file_float64.bin")
-	}()
 
 	//write some intre data
 	rand := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	for i := 0; i < 1000; i++ {
 		generatedIntArray[i] = rand.Float64()
-		binary.Write(file, binary.LittleEndian, generatedIntArray[i])
+		fcw.Write(generatedIntArray[i])
 	}
-	file.Close()
+	fcw.Close()
 
-	r := NewFileColReader("file_float64.bin", reflect.Float64)
+	r := NewFileColReader("data", "file_float64", reflect.Float64)
 	err = r.Open()
 	assert.Assert(t, !isError(err))
 

@@ -2,25 +2,16 @@ package query
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
-	"path/filepath"
 	"reflect"
 	"testing"
 
 	"gotest.tools/assert"
 )
 
-func TestFileTableNoFolder(t *testing.T) {
-	_, err := NewFileTable("bad-path/inesistent-fodler", nil)
-	assert.Assert(t, isError(err))
-}
-
-func TestFileTableInsert(t *testing.T) {
-	dirpath := "data/reuslt-1"
+func TestManagement(t *testing.T) {
+	r := NewFileTable("data", "table_1")
 	defer os.RemoveAll("data")
-
-	os.MkdirAll(dirpath, os.ModePerm)
 
 	schema := []ColDescription{
 		ColDescription{
@@ -32,21 +23,59 @@ func TestFileTableInsert(t *testing.T) {
 	}
 	j, err := json.Marshal(schema)
 	assert.Assert(t, !isError(err))
-	ioutil.WriteFile(filepath.Join(dirpath, "metadata.json"), j, 0644)
 
-	ft, err := NewFileTable(dirpath, &schema)
+	t.Logf("Create table with schema %v", string(j))
+	err = r.Create(&schema)
+	t.Logf("Read table schema %v", string(j))
+	readedSchema, err := r.GetSchema()
 	assert.Assert(t, !isError(err))
 
+	j, err = json.Marshal(schema)
+	assert.Assert(t, !isError(err))
+	t.Logf("Readed schema %v", string(j))
+	assert.Assert(t, reflect.DeepEqual(schema, *readedSchema))
+
+	//delete table
+	t.Logf("Delete table %s", r.fullPath)
+	err = r.Delete()
+	assert.Assert(t, !isError(err))
+}
+
+func TestInsert(t *testing.T) {
+	r := NewFileTable("data", "table_1")
+	defer os.RemoveAll("data")
+
+	schema := []ColDescription{
+		ColDescription{
+			"col_1",
+			reflect.Int32},
+		ColDescription{
+			"col_2",
+			reflect.Int64},
+	}
+	err := r.Create(&schema)
+	assert.Assert(t, !isError(err))
+
+	is, err := r.OpenInsertStatement()
+	assert.Assert(t, !isError(err))
+
+	gotSchema := is.GetSchema()
+	assert.Assert(t, reflect.DeepEqual(schema, *gotSchema))
+
 	for i := 0; i < 100; i++ {
-		row := []interface{}{int32(123), int64(456)}
-		err = ft.InsertRow(&row)
+		row := []interface{}{int32(i), int64(i + 2)}
+		err = is.InsertRow(&row)
 		assert.Assert(t, !isError(err))
 	}
 
-	//get resultset
-	rs, err := ft.SelectAll()
+	ss, err := r.OpenSelectStatement()
 	assert.Assert(t, !isError(err))
+
+	rs, err := ss.SelectAll()
+	assert.Assert(t, !isError(err))
+
 	var work bool = true
+	var idx int32 = 0
 	for work {
 		work, err = rs.HasNext()
 		assert.Assert(t, !isError(err))
@@ -55,7 +84,8 @@ func TestFileTableInsert(t *testing.T) {
 		}
 		row, err := rs.Next()
 		assert.Assert(t, !isError(err))
-		assert.Equal(t, (*row)[0], int32(123))
-		assert.Equal(t, (*row)[1], int64(456))
+		assert.Equal(t, (*row)[0], int32(idx))
+		assert.Equal(t, (*row)[1], int64(idx+2))
+		idx++
 	}
 }

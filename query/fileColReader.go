@@ -1,7 +1,6 @@
 package query
 
 import (
-	"encoding/binary"
 	"log"
 	"os"
 	"reflect"
@@ -13,31 +12,32 @@ import (
 	search on binary files
 */
 type FileColReader struct {
-	fileName string
-	colType  reflect.Kind
-	file     *os.File
-	err      error
+	path         string
+	fileName     string
+	colType      reflect.Kind
+	rotateReader *rotateReader
 }
 
 // check if the file is present
 func (r *FileColReader) checkFile() error {
-	if r.file == nil {
+	if r.rotateReader == nil {
 		return os.ErrNotExist
 	}
 	return nil
 }
 
 // NewFileColReader allocate new instance
-func NewFileColReader(_fileName string, _kind reflect.Kind) *FileColReader {
+func NewFileColReader(path string, fileName string, kind reflect.Kind) *FileColReader {
 	return &FileColReader{
-		fileName: _fileName,
-		colType:  _kind}
+		path:         path,
+		fileName:     fileName,
+		colType:      kind,
+		rotateReader: newRotateReaderNoInit(path, fileName)}
 }
 
 // Open the file associated to the column
-func (r *FileColReader) Open() error {
-	var err error
-	r.file, err = os.Open(r.fileName)
+func (r *FileColReader) Open() (err error) {
+	err = r.rotateReader.updateChunkInfo()
 	if err != nil {
 		log.Printf("Error while opening %s file  with error %s\n", r.fileName, err)
 	}
@@ -47,10 +47,10 @@ func (r *FileColReader) Open() error {
 // Close the file
 func (r *FileColReader) Close() error {
 	var err error
-	if r.file == nil {
+	if r.rotateReader == nil {
 		return nil
 	}
-	err = r.file.Close()
+	err = r.rotateReader.Close()
 	if err != nil {
 		log.Printf("Error while opening %s file  with error %s\n", r.fileName, err)
 	}
@@ -59,7 +59,7 @@ func (r *FileColReader) Close() error {
 
 // ReadNext read an int32 from file
 func (r *FileColReader) ReadNext() (interface{}, error) {
-	if r.file == nil {
+	if r.rotateReader == nil {
 		return int32(0), os.ErrNotExist
 	}
 	//read int32 from file
@@ -68,27 +68,27 @@ func (r *FileColReader) ReadNext() (interface{}, error) {
 	switch r.colType {
 	case reflect.Bool:
 		var b bool = false
-		err = binary.Read(r.file, binary.LittleEndian, &b)
+		err = r.rotateReader.Read(&b)
 		result = b
 	case reflect.Int32:
 		var i32 int32 = 0
-		err = binary.Read(r.file, binary.LittleEndian, &i32)
+		err = r.rotateReader.Read(&i32)
 		result = i32
 	case reflect.Int64:
 		var i64 int64 = 0
-		err = binary.Read(r.file, binary.LittleEndian, &i64)
+		err = r.rotateReader.Read(&i64)
 		result = i64
 	case reflect.Float32:
 		var f32 float32 = 0
-		err = binary.Read(r.file, binary.LittleEndian, &f32)
+		err = r.rotateReader.Read(&f32)
 		result = f32
 	case reflect.Float64:
 		var f64 float64 = 0
-		err = binary.Read(r.file, binary.LittleEndian, &f64)
+		err = r.rotateReader.Read(&f64)
 		result = f64
 	case reflect.String:
 		// var i64 int64 = 0
-		// binary.Read(r.file, binary.LittleEndian, &i64)
+		// binary.Read(&i64)
 		// result = i64
 	}
 	return result, err
