@@ -1,7 +1,6 @@
 package query
 
 import (
-	"encoding/json"
 	"os"
 	"reflect"
 	"testing"
@@ -21,22 +20,12 @@ func TestManagement(t *testing.T) {
 			"col_2",
 			reflect.Int64},
 	}
-	j, err := json.Marshal(schema)
-	assert.Assert(t, !isError(err))
-
-	t.Logf("Create table with schema %v", string(j))
-	err = r.Create(&schema)
-	t.Logf("Read table schema %v", string(j))
+	err := r.Create(&schema)
 	readedSchema, err := r.GetSchema()
 	assert.Assert(t, !isError(err))
-
-	j, err = json.Marshal(schema)
-	assert.Assert(t, !isError(err))
-	t.Logf("Readed schema %v", string(j))
 	assert.Assert(t, reflect.DeepEqual(schema, *readedSchema))
 
 	//delete table
-	t.Logf("Delete table %s", r.fullPath)
 	err = r.Delete()
 	assert.Assert(t, !isError(err))
 }

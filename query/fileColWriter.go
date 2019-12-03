@@ -1,7 +1,6 @@
 package query
 
 import (
-	"log"
 	"os"
 	"reflect"
 )
@@ -35,29 +34,19 @@ func (w *FileColWriter) Open() error {
 	}
 	err := w.rotateWriter.init()
 	if err != nil {
-		log.Printf("Error while opening %s file  with error %s\n", w.fileName, err)
 		return err
 	}
 
 	//give a rotate in case we have no file
-	err = w.rotateWriter.Rotate()
-	if err != nil {
-		log.Printf("Error while execute rotate on %s file  with error %s\n", w.fileName, err)
-	}
-	return err
+	return w.rotateWriter.Rotate()
 }
 
 // Close the file
 func (w *FileColWriter) Close() error {
-	var err error
 	if w.rotateWriter == nil {
 		return os.ErrNotExist
 	}
-	err = w.rotateWriter.Close()
-	if err != nil {
-		log.Printf("Error while opening %s file  with error %s\n", w.fileName, err)
-	}
-	return err
+	return w.rotateWriter.Close()
 }
 
 // ReadNext read an int32 from file

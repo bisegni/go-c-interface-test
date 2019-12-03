@@ -1,7 +1,6 @@
 package query
 
 import (
-	"log"
 	"os"
 	"reflect"
 )
@@ -37,24 +36,15 @@ func NewFileColReader(path string, fileName string, kind reflect.Kind) *FileColR
 
 // Open the file associated to the column
 func (r *FileColReader) Open() (err error) {
-	err = r.rotateReader.updateChunkInfo()
-	if err != nil {
-		log.Printf("Error while opening %s file  with error %s\n", r.fileName, err)
-	}
-	return err
+	return r.rotateReader.updateChunkInfo()
 }
 
 // Close the file
 func (r *FileColReader) Close() error {
-	var err error
 	if r.rotateReader == nil {
 		return nil
 	}
-	err = r.rotateReader.Close()
-	if err != nil {
-		log.Printf("Error while opening %s file  with error %s\n", r.fileName, err)
-	}
-	return err
+	return r.rotateReader.Close()
 }
 
 // ReadNext read an int32 from file
