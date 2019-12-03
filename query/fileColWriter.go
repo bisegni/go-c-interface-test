@@ -1,7 +1,6 @@
 package query
 
 import (
-	"encoding/binary"
 	"log"
 	"os"
 	"reflect"
@@ -13,26 +12,37 @@ import (
 	search on binary files
 */
 type FileColWriter struct {
-	fileName string
-	colType  reflect.Kind
-	file     *os.File
+	path         string
+	fileName     string
+	colType      reflect.Kind
+	rotateWriter *rotateWriter
 }
 
 // NewFileColWriter allocate new instance
-func NewFileColWriter(_fileName string, _kind reflect.Kind) *FileColWriter {
+func NewFileColWriter(path string, fileName string, kind reflect.Kind) *FileColWriter {
 	return &FileColWriter{
-		fileName: _fileName,
-		colType:  _kind}
+		path:         path,
+		fileName:     fileName,
+		colType:      kind,
+		rotateWriter: newRotateWriterNoInit(path, fileName)}
+
 }
 
 // Open the file associated to the column
 func (w *FileColWriter) Open() error {
-	var err error
-	w.file, err = os.OpenFile(w.fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm)
-
+	if w.rotateWriter == nil {
+		return os.ErrNotExist
+	}
+	err := w.rotateWriter.init()
 	if err != nil {
-		w.file = nil
 		log.Printf("Error while opening %s file  with error %s\n", w.fileName, err)
+		return err
+	}
+
+	//give a rotate in case we have no file
+	err = w.rotateWriter.Rotate()
+	if err != nil {
+		log.Printf("Error while execute rotate on %s file  with error %s\n", w.fileName, err)
 	}
 	return err
 }
@@ -40,10 +50,10 @@ func (w *FileColWriter) Open() error {
 // Close the file
 func (w *FileColWriter) Close() error {
 	var err error
-	if w.file == nil {
-		return nil
+	if w.rotateWriter == nil {
+		return os.ErrNotExist
 	}
-	err = w.file.Close()
+	err = w.rotateWriter.Close()
 	if err != nil {
 		log.Printf("Error while opening %s file  with error %s\n", w.fileName, err)
 	}
@@ -52,7 +62,7 @@ func (w *FileColWriter) Close() error {
 
 // ReadNext read an int32 from file
 func (w *FileColWriter) Write(data interface{}) error {
-	if w.file == nil {
+	if w.rotateWriter == nil {
 		return os.ErrNotExist
 	}
 	//read int32 from file
@@ -63,19 +73,19 @@ func (w *FileColWriter) Write(data interface{}) error {
 	switch w.colType {
 	case reflect.Bool:
 		b := data.(bool)
-		return binary.Write(w.file, binary.LittleEndian, &b)
+		return w.rotateWriter.Write(b)
 	case reflect.Int32:
 		i32 := data.(int32)
-		return binary.Write(w.file, binary.LittleEndian, &i32)
+		return w.rotateWriter.Write(i32)
 	case reflect.Int64:
 		i64 := data.(int64)
-		return binary.Write(w.file, binary.LittleEndian, &i64)
+		return w.rotateWriter.Write(i64)
 	case reflect.Float32:
 		f32 := data.(float32)
-		return binary.Write(w.file, binary.LittleEndian, &f32)
+		return w.rotateWriter.Write(f32)
 	case reflect.Float64:
 		f64 := data.(float64)
-		return binary.Write(w.file, binary.LittleEndian, &f64)
+		return w.rotateWriter.Write(f64)
 	case reflect.String:
 		// var i64 int64 = 0
 		// binary.Read(r.file, binary.LittleEndian, &i64)

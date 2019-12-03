@@ -12,32 +12,33 @@ import (
 )
 
 func TestCWOpenNoFoundFile(t *testing.T) {
-	w := NewFileColWriter("file_not_present.bin", reflect.Bool)
-	defer os.Remove("file_not_present.bin")
+	w := NewFileColWriter("data", "file_not_present.bin", reflect.Bool)
+	defer os.RemoveAll("data")
 	err := w.Open()
 	assert.Assert(t, !isError(err))
 }
 
 func TestCWOpenFoundFile(t *testing.T) {
 	//create file for test
-	var file, err = os.Create("file_present.bin")
+	_ = os.MkdirAll("data", os.ModePerm)
+	var file, err = os.Create("data/file_present.bin")
 	assert.Assert(t, !isError(err))
 	defer func() {
 		file.Close()
-		os.Remove("file_present.bin")
+		os.RemoveAll("data")
 	}()
-	r := NewFileColWriter("file_present.bin", reflect.Bool)
+	r := NewFileColWriter("data", "file_present.bin", reflect.Bool)
 	err = r.Open()
 	assert.Assert(t, !isError(err))
 }
 
 func TestCWWriteWrongTypeOnInsert(t *testing.T) {
 	//create file for test
-	r := NewFileColWriter("file_data.bin", reflect.Bool)
+	r := NewFileColWriter("data", "file_data.bin", reflect.Bool)
 	e := r.Open()
 	defer func() {
 		r.Close()
-		os.Remove("file_data.bin")
+		os.RemoveAll("data")
 	}()
 
 	assert.Assert(t, !isError(e))
@@ -51,10 +52,10 @@ func TestCWWriteBool(t *testing.T) {
 	//create file for test
 	var generatedIntArray [1000]bool
 	defer func() {
-		os.Remove("file_data.bin")
+		os.RemoveAll("data")
 	}()
 
-	r := NewFileColWriter("file_data.bin", reflect.Bool)
+	r := NewFileColWriter("data", "file_data.bin", reflect.Bool)
 	e := r.Open()
 	assert.Assert(t, !isError(e))
 
@@ -68,7 +69,7 @@ func TestCWWriteBool(t *testing.T) {
 	}
 
 	//read data form file
-	file, e := os.Open("file_data.bin")
+	file, e := os.Open("data/file_data.bin.1")
 	assert.Assert(t, !isError(e))
 	var b bool = false
 	var i int32 = 0
@@ -87,10 +88,10 @@ func TestCWWriteInt32(t *testing.T) {
 	//create file for test
 	var generatedArray [1000]int32
 	defer func() {
-		os.Remove("file_data.bin")
+		os.RemoveAll("data")
 	}()
 
-	r := NewFileColWriter("file_data.bin", reflect.Int32)
+	r := NewFileColWriter("data", "file_data.bin", reflect.Int32)
 	e := r.Open()
 	assert.Assert(t, !isError(e))
 
@@ -104,7 +105,7 @@ func TestCWWriteInt32(t *testing.T) {
 	}
 
 	//read data form file
-	file, e := os.Open("file_data.bin")
+	file, e := os.Open("data/file_data.bin.1")
 	assert.Assert(t, !isError(e))
 	var i32 int32 = 0
 	var i int32 = 0
@@ -123,10 +124,10 @@ func TestCWWriteInt64(t *testing.T) {
 	//create file for test
 	var generatedArray [1000]int64
 	defer func() {
-		os.Remove("file_data.bin")
+		os.RemoveAll("data")
 	}()
 
-	r := NewFileColWriter("file_data.bin", reflect.Int64)
+	r := NewFileColWriter("data", "file_data.bin", reflect.Int64)
 	e := r.Open()
 	assert.Assert(t, !isError(e))
 
@@ -140,7 +141,7 @@ func TestCWWriteInt64(t *testing.T) {
 	}
 
 	//read data form file
-	file, e := os.Open("file_data.bin")
+	file, e := os.Open("data/file_data.bin.1")
 	assert.Assert(t, !isError(e))
 	var i64 int64 = 0
 	var i int32 = 0
@@ -159,10 +160,10 @@ func TestCWWriteFloat32(t *testing.T) {
 	//create file for test
 	var generatedArray [1000]float32
 	defer func() {
-		os.Remove("file_data.bin")
+		os.RemoveAll("data")
 	}()
 
-	r := NewFileColWriter("file_data.bin", reflect.Float32)
+	r := NewFileColWriter("data", "file_data.bin", reflect.Float32)
 	e := r.Open()
 	assert.Assert(t, !isError(e))
 
@@ -176,7 +177,7 @@ func TestCWWriteFloat32(t *testing.T) {
 	}
 
 	//read data form file
-	file, e := os.Open("file_data.bin")
+	file, e := os.Open("data/file_data.bin.1")
 	assert.Assert(t, !isError(e))
 	var f32 float32 = 0
 	var i int32 = 0
@@ -195,10 +196,10 @@ func TestCWWriteFloat64(t *testing.T) {
 	//create file for test
 	var generatedArray [1000]float64
 	defer func() {
-		os.Remove("file_data.bin")
+		os.RemoveAll("data")
 	}()
 
-	r := NewFileColWriter("file_data.bin", reflect.Float64)
+	r := NewFileColWriter("data", "file_data.bin", reflect.Float64)
 	e := r.Open()
 	assert.Assert(t, !isError(e))
 
@@ -212,7 +213,7 @@ func TestCWWriteFloat64(t *testing.T) {
 	}
 
 	//read data form file
-	file, e := os.Open("file_data.bin")
+	file, e := os.Open("data/file_data.bin.1")
 	assert.Assert(t, !isError(e))
 	var f64 float64 = 0
 	var i int32 = 0
@@ -228,18 +229,21 @@ func TestCWWriteFloat64(t *testing.T) {
 }
 
 func TestAppend(t *testing.T) {
-	r := NewFileColWriter("file_data.bin", reflect.Bool)
+	defer os.RemoveAll("data")
+	r := NewFileColWriter("data", "file_data.bin", reflect.Bool)
 	e := r.Open()
 	assert.Assert(t, !isError(e))
 	r.Write(false)
 
-	r1 := NewFileColWriter("file_data.bin", reflect.Bool)
+	r1 := NewFileColWriter("data", "file_data.bin", reflect.Bool)
 	defer r1.Close()
+	assert.Assert(t, !isError(e))
+
 	e = r1.Open()
 	assert.Assert(t, !isError(e))
 	r1.Write(true)
 
-	fileReadTest, e := os.Open("file_data.bin")
+	fileReadTest, e := os.Open("data/file_data.bin.1")
 	assert.Assert(t, !isError(e))
 	defer fileReadTest.Close()
 

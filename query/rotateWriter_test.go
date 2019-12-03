@@ -31,7 +31,7 @@ func TestChunkRotationForWriter(t *testing.T) {
 		assert.Assert(t, !isError(err))
 	}
 	rw.Rotate()
-	assert.Assert(t, rw.CurrentIndex == numChunk+1)
+	assert.Assert(t, rw.TotalIndex == numChunk+1)
 
 	//check file presence
 	for idx := 0; int32(idx) < numChunk; idx++ {

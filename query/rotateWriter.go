@@ -10,33 +10,12 @@ import (
 	"sync"
 )
 
-func checkFilexExists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return true, err
-}
-
-//! check if file has reached the maximun size
-func checkForMaxSize(f *os.File, maxSize int64) (bool, error) {
-	fi, err := f.Stat()
-	if err != nil {
-		// Could not obtain stat, handle error
-		return false, err
-	}
-	return (fi.Size() >= maxSize), nil
-}
-
 type rotateWriter struct {
 	lock          sync.Mutex
 	path          string
 	chunkInfoFile string
 	Filename      string `json:"name"`
-	CurrentIndex  int32  `json:"cur_index"`
+	TotalIndex    int32  `json:"total_index"`
 	currentFile   *os.File
 }
 
@@ -51,6 +30,10 @@ func newRotateWriter(path string, filename string) (w *rotateWriter, err error) 
 		return nil, err
 	}
 	return w, nil
+}
+
+func newRotateWriterNoInit(path string, filename string) *rotateWriter {
+	return &rotateWriter{path: path, Filename: filename, chunkInfoFile: filepath.Join(path, fmt.Sprintf("%s.chunk", filename))}
 }
 
 func (w *rotateWriter) init() (err error) {
@@ -81,7 +64,7 @@ func (w *rotateWriter) init() (err error) {
 	json.Unmarshal(byteValue, w)
 
 	//open file if we have got somethig
-	w.currentFile, err = os.OpenFile(filepath.Join(w.path, fmt.Sprintf("%s.%d", w.Filename, w.CurrentIndex)), os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	w.currentFile, err = os.OpenFile(filepath.Join(w.path, fmt.Sprintf("%s.%d", w.Filename, w.TotalIndex)), os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm)
 	return
 }
 
@@ -118,8 +101,15 @@ func (w *rotateWriter) Rotate() (err error) {
 		return
 	}
 	// Create a new file.
-	w.CurrentIndex = w.CurrentIndex + 1
-	w.currentFile, err = os.Create(filepath.Join(w.path, fmt.Sprintf("%s.%d", w.Filename, w.CurrentIndex)))
+	w.TotalIndex = w.TotalIndex + 1
+	w.currentFile, err = os.Create(filepath.Join(w.path, fmt.Sprintf("%s.%d", w.Filename, w.TotalIndex)))
 	w.peristCunkInfo()
 	return
+}
+
+func (w *rotateWriter) Close() error {
+	if w.currentFile == nil {
+		return nil
+	}
+	return w.currentFile.Close()
 }
