@@ -19,7 +19,7 @@ type AbstractFileTable struct {
 
 	// Statistic column value
 	stat StatisticResult
-	// statistic muthex
+	// statistic mutex
 	statMux sync.Mutex
 }
 
@@ -68,7 +68,7 @@ func (aft *AbstractFileTable) allocateColumnWriter() (*[]ColWriter, error) {
 	return &columnWriter, nil
 }
 
-// Allocate the structur column reader
+// Allocate the structure column reader
 func (aft *AbstractFileTable) allocateColumnReader() (*[]ColReader, error) {
 	var columnReader []ColReader
 	if aft.schema == nil {
