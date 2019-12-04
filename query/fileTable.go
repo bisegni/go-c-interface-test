@@ -28,23 +28,27 @@ func (ft *FileTable) GetSchema() (*[]ColDescription, error) {
 }
 
 // OpenInsertStatement impl.
-func (ft *FileTable) OpenInsertStatement() (*InsertStatement, error) {
+func (ft *FileTable) OpenInsertStatement() (is *InsertStatement, err error) {
+	var cw *[]ColWriter
 	if err := ft.loadSchema(); err != nil {
 		return nil, err
 	}
-	if err := ft.allocateColumnWriter(); err != nil {
+	if cw, err = ft.allocateColumnWriter(); err != nil {
 		return nil, err
 	}
-	return newInsertStatement(&ft.schema, ft.columnWriter), nil
+	is, err = newInsertStatement(&ft.schema, *cw), nil
+	return
 }
 
 // OpenSelectStatement impl.
-func (ft *FileTable) OpenSelectStatement() (*SelectStatement, error) {
+func (ft *FileTable) OpenSelectStatement() (ss *SelectStatement, err error) {
+	var cr *[]ColReader
 	if err := ft.loadSchema(); err != nil {
 		return nil, err
 	}
-	if err := ft.allocateColumnReader(); err != nil {
+	if cr, err = ft.allocateColumnReader(); err != nil {
 		return nil, err
 	}
-	return newSelectStatement(&ft.schema, ft.columnReader), nil
+	ss = newSelectStatement(&ft.schema, *cr)
+	return
 }

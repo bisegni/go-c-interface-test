@@ -38,6 +38,7 @@ type ResultSet interface {
 	GetSchema() (*[]ColDescription, error)
 	HasNext() (bool, error)
 	Next() (*[]interface{}, error)
+	Close() error
 }
 
 var (
