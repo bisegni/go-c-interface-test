@@ -80,8 +80,8 @@ type Table interface {
 	// GetStatistics return the statistics for the table
 	GetStatistics() *StatisticResult
 
-	//OpenInsertStatement create new insert statement
-	OpenInsertStatement() (*InsertStatement, error)
+	//Insert a new row in table
+	InsertRow(newRow *[]interface{}) error
 
 	//OpenSelectStatement create new select statement
 	OpenSelectStatement() (*SelectStatement, error)

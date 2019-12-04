@@ -3,8 +3,6 @@ package query
 import (
 	"os"
 	"testing"
-
-	"gotest.tools/assert"
 )
 
 // func TestCreateRandomTable(t *testing.T) {
@@ -21,10 +19,7 @@ func TestRandomDataGenerator(t *testing.T) {
 	//generate a random table
 	ft.Create(newRandomSchema())
 
-	is, err := ft.OpenInsertStatement()
-	assert.Assert(t, !isError(err))
-
-	rdg := NewRandomData(is)
+	rdg := NewRandomData(ft)
 
 	rdg.Execute(10000)
 }

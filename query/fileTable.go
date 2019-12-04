@@ -1,13 +1,21 @@
 package query
 
 import (
+	"errors"
 	"path/filepath"
+	"sync"
 )
 
 // FileTable manage a table using folder and files
 type FileTable struct {
 	AbstractFileTable
+	writeMutex sync.Mutex
 }
+
+var (
+	// ErrFileTableRowMIsmatchSchema The table already exists
+	ErrFileTableRowMIsmatchSchema = errors.New("The row element number differ from column number")
+)
 
 // NewFileTable allocate new instance
 func NewFileTable(_path string, _name string) *FileTable {
@@ -27,17 +35,24 @@ func (ft *FileTable) GetSchema() (*[]ColDescription, error) {
 	return &ft.schema, err
 }
 
-// OpenInsertStatement impl.
-func (ft *FileTable) OpenInsertStatement() (is *InsertStatement, err error) {
+// InsertRow impl.
+func (ft *FileTable) InsertRow(newRow *[]interface{}) (err error) {
+	ft.writeMutex.Lock()
+	defer ft.writeMutex.Unlock()
 	var cw *[]ColWriter
-	if err := ft.loadSchema(); err != nil {
-		return nil, err
-	}
 	if cw, err = ft.allocateColumnWriter(); err != nil {
-		return nil, err
+		return err
 	}
-	is, err = newInsertStatement(&ft.schema, *cw), nil
-	return
+	if len(*newRow) != len(*cw) {
+		return ErrFileTableRowMIsmatchSchema
+	}
+	for i, v := range *newRow {
+		err := (*cw)[i].Write(v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // OpenSelectStatement impl.

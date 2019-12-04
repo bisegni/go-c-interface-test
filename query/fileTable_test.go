@@ -51,15 +51,13 @@ func TestInsert(t *testing.T) {
 	err := r.Create(&schema)
 	assert.Assert(t, !isError(err))
 
-	is, err := r.OpenInsertStatement()
+	gotSchema, err := r.GetSchema()
 	assert.Assert(t, !isError(err))
-
-	gotSchema := is.GetSchema()
 	assert.Assert(t, reflect.DeepEqual(schema, *gotSchema))
 
 	for i := 0; i < 100; i++ {
 		row := []interface{}{int32(i), int64(i + 2)}
-		err = is.InsertRow(&row)
+		err = r.InsertRow(&row)
 		assert.Assert(t, !isError(err))
 	}
 
