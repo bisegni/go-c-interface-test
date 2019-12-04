@@ -95,16 +95,17 @@ func TestCreateWriterAndReader(t *testing.T) {
 	assert.Assert(t, reflect.DeepEqual(schema, at.schema))
 
 	//load writer
-	assert.Assert(t, !isError(at.allocateColumnWriter()))
+	cw, err := at.allocateColumnWriter()
+	assert.Assert(t, !isError(err))
 
-	assert.Assert(t, at.columnWriter != nil)
-	assert.Assert(t, len(at.columnWriter) == 2)
+	assert.Assert(t, cw != nil)
+	assert.Assert(t, len(*cw) == 2)
 
 	//load writer
-	assert.Assert(t, !isError(at.allocateColumnReader()))
-
-	assert.Assert(t, at.columnReader != nil)
-	assert.Assert(t, len(at.columnReader) == 2)
+	cr, err := at.allocateColumnReader()
+	assert.Assert(t, !isError(err))
+	assert.Assert(t, cr != nil)
+	assert.Assert(t, len(*cr) == 2)
 }
 
 func TestAbstractTableStatistic(t *testing.T) {

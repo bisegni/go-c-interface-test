@@ -10,8 +10,8 @@ import (
 // RandomDataGenerator create a random query result
 type RandomDataGenerator struct {
 	//path where store the result
-	insertStatement *InsertStatement
-	rowCount        int64
+	table    Table
+	rowCount int64
 }
 
 func newRandomSchema() *[]ColDescription {
@@ -41,15 +41,15 @@ func newRandomSchema() *[]ColDescription {
 }
 
 // NewRandomData allocate new instance
-func NewRandomData(insertStatement *InsertStatement) *RandomDataGenerator {
+func NewRandomData(table Table) *RandomDataGenerator {
 	return &RandomDataGenerator{
-		insertStatement: insertStatement}
+		table: table}
 }
 
 // Execute Generate random query result and metadata
 func (rf *RandomDataGenerator) Execute(numberOfRow int32) error {
 	var err error
-	schema := rf.insertStatement.GetSchema()
+	schema, err := rf.table.GetSchema()
 
 	//generate random number of column
 	rand := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -74,7 +74,7 @@ func (rf *RandomDataGenerator) Execute(numberOfRow int32) error {
 				row[i] = rand.Float64()
 			}
 		}
-		err = rf.insertStatement.InsertRow(&row)
+		err = rf.table.InsertRow(&row)
 		if err != nil {
 			return err
 		}

@@ -1,13 +1,21 @@
 package query
 
 import (
+	"errors"
 	"path/filepath"
+	"sync"
 )
 
 // FileTable manage a table using folder and files
 type FileTable struct {
 	AbstractFileTable
+	writeMutex sync.Mutex
 }
+
+var (
+	// ErrFileTableRowMIsmatchSchema The table already exists
+	ErrFileTableRowMIsmatchSchema = errors.New("The row element number differ from column number")
+)
 
 // NewFileTable allocate new instance
 func NewFileTable(_path string, _name string) *FileTable {
@@ -27,24 +35,35 @@ func (ft *FileTable) GetSchema() (*[]ColDescription, error) {
 	return &ft.schema, err
 }
 
-// OpenInsertStatement impl.
-func (ft *FileTable) OpenInsertStatement() (*InsertStatement, error) {
-	if err := ft.loadSchema(); err != nil {
-		return nil, err
+// InsertRow impl.
+func (ft *FileTable) InsertRow(newRow *[]interface{}) (err error) {
+	ft.writeMutex.Lock()
+	defer ft.writeMutex.Unlock()
+	var cw *[]ColWriter
+	if cw, err = ft.allocateColumnWriter(); err != nil {
+		return err
 	}
-	if err := ft.allocateColumnWriter(); err != nil {
-		return nil, err
+	if len(*newRow) != len(*cw) {
+		return ErrFileTableRowMIsmatchSchema
 	}
-	return newInsertStatement(&ft.schema, ft.columnWriter), nil
+	for i, v := range *newRow {
+		err := (*cw)[i].Write(v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // OpenSelectStatement impl.
-func (ft *FileTable) OpenSelectStatement() (*SelectStatement, error) {
+func (ft *FileTable) OpenSelectStatement() (ss *SelectStatement, err error) {
+	var cr *[]ColReader
 	if err := ft.loadSchema(); err != nil {
 		return nil, err
 	}
-	if err := ft.allocateColumnReader(); err != nil {
+	if cr, err = ft.allocateColumnReader(); err != nil {
 		return nil, err
 	}
-	return newSelectStatement(&ft.schema, ft.columnReader), nil
+	ss = newSelectStatement(&ft.schema, *cr)
+	return
 }

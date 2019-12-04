@@ -17,15 +17,9 @@ type AbstractFileTable struct {
 	// contains the schema of the table/virtual table
 	schema []ColDescription
 
-	// the reader for the column
-	columnReader []ColReader
-
-	// the writer for the column
-	columnWriter []ColWriter
-
 	// Statistic column value
 	stat StatisticResult
-	// statistic muthex
+	// statistic mutex
 	statMux sync.Mutex
 }
 
@@ -56,44 +50,41 @@ func (aft *AbstractFileTable) ensureFolder() error {
 }
 
 // Allocate the structure column writer
-func (aft *AbstractFileTable) allocateColumnWriter() error {
-	if aft.columnWriter != nil {
-		return nil
-	}
+func (aft *AbstractFileTable) allocateColumnWriter() (*[]ColWriter, error) {
+	var columnWriter []ColWriter
 	if aft.schema == nil {
-		return ErrNoSchemaInformation
+		return nil, ErrNoSchemaInformation
 	}
 	// load column writer for write operation
 	for _, col := range aft.schema {
 		w := NewFileColWriter(aft.fullPath, col.Name, col.Kind)
 		err := w.Open()
 		if err == nil {
-			aft.columnWriter = append(aft.columnWriter, w)
+			columnWriter = append(columnWriter, w)
 		} else {
-			aft.columnWriter = nil
-			return err
+			return nil, err
 		}
 	}
-	return nil
+	return &columnWriter, nil
 }
 
-// Allocate the structur column reader
-func (aft *AbstractFileTable) allocateColumnReader() error {
+// Allocate the structure column reader
+func (aft *AbstractFileTable) allocateColumnReader() (*[]ColReader, error) {
+	var columnReader []ColReader
 	if aft.schema == nil {
-		return ErrNoSchemaInformation
+		return nil, ErrNoSchemaInformation
 	}
 	// load column writer for write operation
 	for _, col := range aft.schema {
 		r := NewFileColReader(aft.fullPath, col.Name, col.Kind)
 		err := r.Open()
 		if err == nil {
-			aft.columnReader = append(aft.columnReader, r)
+			columnReader = append(columnReader, r)
 		} else {
-			aft.columnReader = nil
-			return err
+			return nil, err
 		}
 	}
-	return nil
+	return &columnReader, nil
 }
 
 // Create impl.
@@ -158,17 +149,5 @@ func (aft *AbstractFileTable) GetStatistics() *StatisticResult {
 
 // Close all structure for table managment
 func (aft *AbstractFileTable) Close() {
-	if aft.columnReader != nil {
-		for _, cr := range aft.columnReader {
-			cr.Close()
-		}
-		aft.columnReader = nil
-	}
 
-	if aft.columnWriter != nil {
-		for _, cw := range aft.columnWriter {
-			cw.Close()
-		}
-		aft.columnWriter = nil
-	}
 }

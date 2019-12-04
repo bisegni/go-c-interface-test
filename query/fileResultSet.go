@@ -87,3 +87,11 @@ func (frs *FileResultSet) Next() (*[]interface{}, error) {
 	}
 	return &frs.currentRow, nil
 }
+
+// Close impl.
+func (frs *FileResultSet) Close() error {
+	for _, cr := range frs.columnReader {
+		cr.Close()
+	}
+	return nil
+}
