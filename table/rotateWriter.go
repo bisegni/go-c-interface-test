@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	fileutil "github.com/bisegni/go-c-interface-test/utility"
+	fileutil "github.com/bisegni/go-c-interface-test/fileutil"
 )
 
 type rotateWriter struct {

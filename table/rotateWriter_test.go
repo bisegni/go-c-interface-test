@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	fileutil "github.com/bisegni/go-c-interface-test/utility"
+	fileutil "github.com/bisegni/go-c-interface-test/fileutil"
 	"gotest.tools/assert"
 )
 

@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"sync"
 
-	fileutil "github.com/bisegni/go-c-interface-test/utility"
+	fileutil "github.com/bisegni/go-c-interface-test/fileutil"
 )
 
 // AbstractFileTable define the base work on a table that is implemented with folder and files
