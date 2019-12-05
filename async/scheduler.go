@@ -18,6 +18,9 @@ func execute(ctx context.Context, runnableChan <-chan Runnable) {
 		case r := <-runnableChan:
 			log.Printf("Executing new job %s\n", r.name())
 			r.execute()
+			if ctx.Err() != nil {
+				return
+			}
 		}
 	}
 }
