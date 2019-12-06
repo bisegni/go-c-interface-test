@@ -21,7 +21,7 @@ func execute(ctx context.Context, runnableChan <-chan Runnable) {
 			return
 
 		case r := <-runnableChan:
-			log.Printf("Executing new job %s\n", r.name())
+			log.Printf("Executing new job '%s'\n", r.name())
 			r.execute()
 			if ctx.Err() != nil {
 				log.Println("Scheduler error -> leaving runnable scheduler")
@@ -50,8 +50,8 @@ func Deinit() {
 	wg.Wait()
 }
 
-// TryEnqueue impl.
-func TryEnqueue(r Runnable) bool {
+// Enqueue impl.
+func Enqueue(r Runnable) bool {
 	select {
 	case runnableChan <- r:
 		return true

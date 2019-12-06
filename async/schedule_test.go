@@ -24,7 +24,7 @@ func (j *JobOne) name() string {
 func TestSchedulerInitDeinit(t *testing.T) {
 	job := JobOne{count: 0}
 	Init(1, 2)
-	TryEnqueue(&job)
+	Enqueue(&job)
 	//give time to scheduler to execute the job
 	time.Sleep(100 * time.Millisecond)
 	Deinit()
