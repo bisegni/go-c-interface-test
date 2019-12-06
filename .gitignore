@@ -5,3 +5,6 @@ foo.o
 go-c-interface-test
 libfoo.a
 build
+
+fastrebuild.sh
+query/*test
