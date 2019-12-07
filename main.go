@@ -1,34 +1,47 @@
 package main
 
-/*
-#cgo CFLAGS: -I . -stdlib=libc++
-#cgo LDFLAGS: -L${SRCDIR}/build -ldbengine -L${SRCDIR}/build/boostinstall/lib -lboost_system -lstdc++
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
 
-#include "src/dbengine.h"
+	guuid "github.com/google/uuid"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-*/
-// import "C"
+	"github.com/bisegni/go-c-interface-test/adapter/s3"
+	"github.com/gorilla/mux"
+)
+
+func homeLink(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Welcome home!")
+}
+
+type process struct {
+	ID     string    `json:"id"`
+	Config s3.Config `json:"config"`
+}
+
+func starProcess(w http.ResponseWriter, r *http.Request) {
+	var newProc process
+	reqBody, err := ioutil.ReadAll(r.Body)
+	fmt.Println(string(reqBody))
+	if err != nil {
+		fmt.Fprintf(w, "Insert data for the process to start")
+	}
+	// Unmarshal the process from json
+	json.Unmarshal(reqBody, &newProc)
+
+	//create new id that will became the folder for the processing data
+	newProc.ID = guuid.New().String()
+	w.WriteHeader(http.StatusCreated)
+
+	json.NewEncoder(w).Encode(newProc)
+}
 
 func main() {
-	//test call c method in comment
-	// queryStr := C.CString("select * form dual\n")
-	// defer C.free(unsafe.Pointer(queryStr))
-
-	// queryUUID := make([]byte, 40)
-
-	// // C.myprint(queryStr)
-
-	// C.submitQuery(queryStr, (*C.char)(unsafe.Pointer(&queryUUID[0])))
-	// fmt.Println("UUID is: " + string(queryUUID))
-
-	// var colCount C.int = 0;
-	// C.columnCount((*C.char)(unsafe.Pointer(&queryUUID[0])), (*C.int)(&colCount));
-
-	// fmt.Println("UUID is: " + string(queryUUID), " row count = " + strconv.Itoa(int(colCount)))
-
-	// //call library function form dbengine lib
-	// C.ACFunction()
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/", homeLink)
+	router.HandleFunc("/process", starProcess).Methods("POST")
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

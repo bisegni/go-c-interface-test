@@ -13,6 +13,8 @@ const (
 type Auth struct {
 	// IamRole must be in the form "arn:aws:iam::0123456789012:role/MyRedshiftRole"
 	IamRole string
+	ID      string
+	Secret  string
 }
 
 // ExternalSource is a set of information to identify the external storage
