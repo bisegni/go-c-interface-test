@@ -2,15 +2,23 @@ package http
 
 import (
 	"log"
+	"os"
+	"path"
+	"path/filepath"
 	"time"
 
 	"github.com/cavaliercoder/grab"
 )
 
 // Download a file via http get protocol
-func Download(url string, destPath string) error {
+func Download(config interface{}, uri string, destPath string) (err error) {
+	//create path directory
+	os.MkdirAll(destPath, os.ModePerm)
+	//get file name from uri
+	fileName := path.Base(uri)
+
 	client := grab.NewClient()
-	req, err := grab.NewRequest(destPath, url)
+	req, err := grab.NewRequest(filepath.Join(destPath, fileName), uri)
 	if err != nil {
 		return err
 	}

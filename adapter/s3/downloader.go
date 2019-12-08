@@ -15,7 +15,11 @@ import (
 )
 
 // Download a file via http get protocol
-func Download(c *Config, uri string, destPath string) (err error) {
+func Download(config interface{}, uri string, destPath string) (err error) {
+	c, ok := (config).(*Config)
+	if !ok {
+		return nil
+	}
 	os.MkdirAll(destPath, os.ModePerm)
 	//get file name from uri
 	fileName := path.Base(uri)
