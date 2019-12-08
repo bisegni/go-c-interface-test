@@ -26,7 +26,11 @@ func NewFileTable(_path string, _name string) *FileTable {
 
 // Create impl.
 func (ft *FileTable) Create(schema *[]ColDescription) error {
-	return ft.writeSchema(schema)
+	err := ft.writeSchema(schema)
+	if err == nil {
+		err = ft.loadSchema()
+	}
+	return err
 }
 
 // GetSchema impl.
