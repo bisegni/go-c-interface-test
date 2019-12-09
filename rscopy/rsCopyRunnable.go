@@ -1,6 +1,7 @@
 package rscopy
 
 import (
+	"fmt"
 	"github.com/bisegni/go-c-interface-test/adapter"
 )
 
@@ -8,10 +9,10 @@ type phase int
 
 // all phases for the table import operation
 const (
-	download 	phase = itoa
-	uncompress 	phase = itoa
-	copy 		phase = itoa
-	cleanup 	phase = itoa
+	Download phase = iota + 1
+	Uncompress
+	Copy
+	Cleanup
 )
 
 // CopyInto is a job that will copy and external file into a table
@@ -32,5 +33,5 @@ func (ci *CopyInto) Execute() {
 }
 
 func (ci *CopyInto) name() string {
-	return fmt.SPrintf("CopyInto %s", ci.config.Table)
+	return fmt.Sprintf("CopyInto %s", ci.config.Table)
 }
