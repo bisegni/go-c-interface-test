@@ -9,7 +9,7 @@ import (
 
 	guuid "github.com/google/uuid"
 
-	"github.com/bisegni/go-c-interface-test/adapter/s3"
+	"github.com/bisegni/go-c-interface-test/adapter"
 	"github.com/gorilla/mux"
 )
 
@@ -18,8 +18,8 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 }
 
 type process struct {
-	ID     string    `json:"id"`
-	Config s3.Config `json:"config"`
+	ID     string                 `json:"id"`
+	Config adapter.ExternalSource `json:"source"`
 }
 
 func starProcess(w http.ResponseWriter, r *http.Request) {
