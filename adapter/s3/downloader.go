@@ -12,11 +12,12 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/bisegni/go-c-interface-test/adapter"
 )
 
 // Download a file via http get protocol
 func Download(config interface{}, uri string, destPath string) (err error) {
-	c, ok := (config).(*Config)
+	c, ok := (config).(*adapter.ExternalSource)
 	if !ok {
 		return nil
 	}
@@ -34,8 +35,8 @@ func Download(config interface{}, uri string, destPath string) (err error) {
 	session, _ := session.NewSession(&aws.Config{
 		Region: aws.String(c.Region),
 		Credentials: credentials.NewStaticCredentials(
-			c.Auth.ID,     // id
-			c.Auth.Secret, // secret
+			c.ExternalAuth.ID,     // id
+			c.ExternalAuth.Secret, // secret
 			"")},
 	)
 	objectInput, err := getObjectByURL(uri)

@@ -1,16 +1,18 @@
 package s3
 
-import "testing"
+import (
+	"os"
+	"testing"
 
-import "gotest.tools/assert"
-
-import "os"
+	"github.com/bisegni/go-c-interface-test/adapter"
+	"gotest.tools/assert"
+)
 
 func TestDownload(t *testing.T) {
 	defer os.RemoveAll("download")
-	c := Config{Region: "region",
-		Auth: AWSAuth{ID: "ID",
-			Secret: "secret"},
+	c := adapter.ExternalSource{Region: "region",
+		ExternalAuth: adapter.Auth{ID: "ID",
+			Secret: "Secret"},
 	}
 	err := Download(&c, "s3://bisegni/FL_insurance_sample.csv.zip", "download")
 	assert.Assert(t, err == nil)
