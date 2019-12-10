@@ -1,4 +1,4 @@
-package query
+package table
 
 import (
 	"encoding/binary"
@@ -9,12 +9,14 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+
+	fileutil "github.com/bisegni/go-c-interface-test/fileutil"
 )
 
 var (
 	// ErrRotateReaderNoChunkInfoFile no chunk file info has been found
 	ErrRotateReaderNoChunkInfoFile = errors.New("No chunk info file available")
-	// ErrRotateReaderChunkNotFound Chunk thath need to exists has not been found
+	// ErrRotateReaderChunkNotFound Chunk that need to exists has not been found
 	ErrRotateReaderChunkNotFound = errors.New("Chunk not found")
 	// ErrRotateReaderNoMoreChunk No more chunk available
 	ErrRotateReaderNoMoreChunk = errors.New("No more chunk available")
@@ -51,9 +53,9 @@ func (w *rotateReader) updateChunkInfo() (err error) {
 	//load data from file
 	err = os.MkdirAll(w.path, os.ModeDir|os.ModePerm)
 	if err != nil {
-		return ErrTMSChemaMetadataNotFount
+		return ErrTMSchemaMetadataNotFount
 	}
-	exists, err := checkFilexExists(w.chunkInfoFile)
+	exists, err := fileutil.CheckFileExists(w.chunkInfoFile)
 	if err != nil {
 		return
 	}
@@ -100,7 +102,7 @@ func (w *rotateReader) switchNextChunk() (err error) {
 	// Create a new file.
 	nextFilePath := filepath.Join(w.path, fmt.Sprintf("%s.%d", w.Filename, w.currentIndex))
 	var chunkExists bool
-	if chunkExists, err = checkFilexExists(nextFilePath); err != nil {
+	if chunkExists, err = fileutil.CheckFileExists(nextFilePath); err != nil {
 		return err
 	}
 	if chunkExists == false {

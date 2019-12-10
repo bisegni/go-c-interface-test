@@ -1,4 +1,4 @@
-package query
+package table
 
 import (
 	"errors"
@@ -19,7 +19,7 @@ var (
 	ErrFRSNoRowFetched = errors.New("No row has been fetched by HasNext method")
 )
 
-// FileResultSet implement a result set usign file as query result
+// FileResultSet implement a result set using file as query result
 /*
 This implementation of result set sue a metadata.json file to read the type of result
 and a file for each column that contains the result

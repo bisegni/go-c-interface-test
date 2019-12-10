@@ -1,12 +1,14 @@
-package query
+package table
 
 import (
-	"gotest.tools/assert"
 	"math/rand"
 	"os"
 	"strconv"
 	"testing"
 	"time"
+
+	fileutil "github.com/bisegni/go-c-interface-test/fileutil"
+	"gotest.tools/assert"
 )
 
 func TestChunkRotationForWriter(t *testing.T) {
@@ -35,7 +37,7 @@ func TestChunkRotationForWriter(t *testing.T) {
 
 	//check file presence
 	for idx := 0; int32(idx) < numChunk; idx++ {
-		b1, e1 := checkFilexExists("chunk_test/filename." + strconv.Itoa(idx+1))
+		b1, e1 := fileutil.CheckFileExists("chunk_test/filename." + strconv.Itoa(idx+1))
 		assert.Assert(t, !isError(e1))
 		assert.Assert(t, b1 == true)
 	}

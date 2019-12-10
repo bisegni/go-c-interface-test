@@ -1,4 +1,4 @@
-package query
+package table
 
 import (
 	"encoding/binary"
@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+
+	fileutil "github.com/bisegni/go-c-interface-test/fileutil"
 )
 
 type rotateWriter struct {
@@ -40,9 +42,9 @@ func (w *rotateWriter) init() (err error) {
 	//load data from file
 	err = os.MkdirAll(w.path, os.ModeDir|os.ModePerm)
 	if err != nil {
-		return ErrTMSChemaMetadataNotFount
+		return ErrTMSchemaMetadataNotFount
 	}
-	exists, err := checkFilexExists(w.chunkInfoFile)
+	exists, err := fileutil.CheckFileExists(w.chunkInfoFile)
 	if err != nil {
 		return
 	}
@@ -63,12 +65,12 @@ func (w *rotateWriter) init() (err error) {
 	}
 	json.Unmarshal(byteValue, w)
 
-	//open file if we have got somethig
+	//open file if we have got something
 	w.currentFile, err = os.OpenFile(filepath.Join(w.path, fmt.Sprintf("%s.%d", w.Filename, w.TotalIndex)), os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm)
 	return
 }
 
-func (w *rotateWriter) peristCunkInfo() (err error) {
+func (w *rotateWriter) persistChunkInfo() (err error) {
 	jsonInfo, err := json.Marshal(w)
 	if err == nil {
 		err = ioutil.WriteFile(filepath.Join(w.path, fmt.Sprintf("%s.chunk", w.Filename)), jsonInfo, os.ModePerm)
@@ -84,9 +86,9 @@ func (w *rotateWriter) Rotate() (err error) {
 	var rotate bool = false
 	// Close existing file if open
 	if w.currentFile != nil {
-		rotate, err = checkForMaxSize(w.currentFile, columnChunkFileSize)
+		rotate, err = fileutil.CheckForMaxSize(w.currentFile, columnChunkFileSize)
 		if rotate {
-			//we have reacehd max size
+			// we have reached max size
 			err = w.currentFile.Close()
 			w.currentFile = nil
 			if err != nil {
@@ -103,7 +105,7 @@ func (w *rotateWriter) Rotate() (err error) {
 	// Create a new file.
 	w.TotalIndex = w.TotalIndex + 1
 	w.currentFile, err = os.Create(filepath.Join(w.path, fmt.Sprintf("%s.%d", w.Filename, w.TotalIndex)))
-	w.peristCunkInfo()
+	w.persistChunkInfo()
 	return
 }
 

@@ -1,8 +1,9 @@
-package query
+package fileutil
 
 import "os"
 
-func checkFilexExists(path string) (bool, error) {
+// CheckFileExists check if the file exists
+func CheckFileExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
 		return true, nil
@@ -13,8 +14,8 @@ func checkFilexExists(path string) (bool, error) {
 	return true, err
 }
 
-//! check if file has reached the maximun size
-func checkForMaxSize(f *os.File, maxSize int64) (bool, error) {
+// CheckForMaxSize check if file has reached the maximun size
+func CheckForMaxSize(f *os.File, maxSize int64) (bool, error) {
 	fi, err := f.Stat()
 	if err != nil {
 		// Could not obtain stat, handle error

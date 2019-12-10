@@ -1,4 +1,4 @@
-package query
+package table
 
 import (
 	"encoding/json"
@@ -7,9 +7,11 @@ import (
 	"path/filepath"
 	"reflect"
 	"sync"
+
+	fileutil "github.com/bisegni/go-c-interface-test/fileutil"
 )
 
-// AbstractFileTable define the base work on a table that is implementaed with fodler and files
+// AbstractFileTable define the base work on a table that is implemented with folder and files
 type AbstractFileTable struct {
 	// path where store the result
 	fullPath string
@@ -28,7 +30,7 @@ func newAbstractFileTable(fullPath string) AbstractFileTable {
 }
 
 func (aft *AbstractFileTable) folderCheck() (bool, error) {
-	return checkFilexExists(aft.fullPath)
+	return fileutil.CheckFileExists(aft.fullPath)
 }
 
 func (aft *AbstractFileTable) ensureFolder() error {
@@ -41,10 +43,10 @@ func (aft *AbstractFileTable) ensureFolder() error {
 		return nil
 	}
 
-	//create folder and metadati
+	//create folder and metadata
 	err = os.MkdirAll(aft.fullPath, os.ModeDir|os.ModePerm)
 	if err != nil {
-		return ErrTMSChemaMetadataNotFount
+		return ErrTMSchemaMetadataNotFount
 	}
 	return nil
 }
@@ -147,7 +149,7 @@ func (aft *AbstractFileTable) GetStatistics() *StatisticResult {
 	return &stat
 }
 
-// Close all structure for table managment
+// Close all structure for table management
 func (aft *AbstractFileTable) Close() {
 
 }

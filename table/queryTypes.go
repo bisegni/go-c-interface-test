@@ -1,17 +1,17 @@
-package query
+package table
 
 import (
 	"errors"
 	"reflect"
 )
 
-// ColDescription conains the column specification
+// ColDescription contains the column specification
 type ColDescription struct {
 	Name string       `json:"name"`
 	Kind reflect.Kind `json:"kind"`
 }
 
-// ColReader abstract interface for column readedr implementation
+// ColReader abstract interface for column reader implementation
 type ColReader interface {
 	Open() error
 	Close() error
@@ -19,12 +19,12 @@ type ColReader interface {
 }
 
 var (
-	// ErrCWTBadType wrong tipy passed to column writer
+	// ErrCWTBadType wrong type passed to column writer
 	ErrCWTBadType = errors.New("Wrong type passed to column writer")
 )
 
 //chunk base file size
-const columnChunkFileSize = 1024 * 1024 // 1Mbyte file size
+const columnChunkFileSize = 1024 * 1024 // 1 Mega byte file size
 
 // ColWriter abstract interface for column writer implementation
 type ColWriter interface {
@@ -42,16 +42,16 @@ type ResultSet interface {
 }
 
 var (
-	// ErrNoSchemaInformation The table has no schema informatio
+	// ErrNoSchemaInformation The table has no schema information
 	ErrNoSchemaInformation = errors.New("The table has no schema information")
 )
 
 var (
-	// ErrTMTableAlredyExists The table already exists
-	ErrTMTableAlredyExists = errors.New("The table already exists")
+	// ErrTMTableAlreadyExists The table already exists
+	ErrTMTableAlreadyExists = errors.New("The table already exists")
 
-	// ErrTMSChemaMetadataNotFount The metadata information has not been found
-	ErrTMSChemaMetadataNotFount = errors.New("The metadata information has not been found")
+	// ErrTMSchemaMetadataNotFount The metadata information has not been found
+	ErrTMSchemaMetadataNotFount = errors.New("The metadata information has not been found")
 )
 
 // StatisticResult return the statics values for the table
@@ -64,7 +64,7 @@ type StatisticResult struct {
 type Table interface {
 	// Create a table
 	/*
-		if table is alredy preset an error is issue
+		if table is already preset an error is issue
 	*/
 	Create(*[]ColDescription) error
 

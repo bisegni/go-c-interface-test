@@ -1,4 +1,4 @@
-package query
+package table
 
 import (
 	"errors"
@@ -42,8 +42,15 @@ func (ft *FileTable) GetSchema() (*[]ColDescription, error) {
 // InsertRow impl.
 func (ft *FileTable) InsertRow(newRow *[]interface{}) (err error) {
 	ft.writeMutex.Lock()
-	defer ft.writeMutex.Unlock()
 	var cw *[]ColWriter
+
+	defer func() {
+		ft.writeMutex.Unlock()
+		for _, w := range *cw {
+			w.Close()
+		}
+	}()
+
 	if cw, err = ft.allocateColumnWriter(); err != nil {
 		return err
 	}

@@ -1,4 +1,4 @@
-package query
+package table
 
 // InsertStatement manage a data of a table using file for each column
 type InsertStatement struct {

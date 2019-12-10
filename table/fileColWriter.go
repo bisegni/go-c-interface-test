@@ -1,4 +1,4 @@
-package query
+package table
 
 import (
 	"os"
@@ -7,7 +7,7 @@ import (
 
 // FileColWriter read the values of a column from a file
 /*
-	The colType insturct the struct to selecte wich type it need to
+	The colType instruct the struct to selected which type it need to
 	search on binary files
 */
 type FileColWriter struct {

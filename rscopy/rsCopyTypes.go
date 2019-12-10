@@ -1,5 +1,7 @@
 package rscopy
 
+import "github.com/bisegni/go-c-interface-test/adapter"
+
 type direction int
 
 const (
@@ -8,28 +10,6 @@ const (
 	// TO specify to copy table data into external basket
 	TO direction = 1
 )
-
-// Auth is a set of information form authentication
-type Auth struct {
-	// IamRole must be in the form "arn:aws:iam::0123456789012:role/MyRedshiftRole"
-	IamRole string
-}
-
-// ExternalSource is a set of information to identify the external storage
-type ExternalSource struct {
-	// SourceURI is the path of external object (ie "s3://mybucket/data/nlTest2.txt")
-	SourceURI string
-	// ExternalAuth contains the authentication token or password to access the exteranl source
-	ExternalAuth Auth
-	// Region is the AWS Region in which the buckets resides
-	Region string
-	// SSH specify if the URI is an ssh manifest
-	SSH bool
-	// Manifest specify that the URI contains a manifest file
-	Manifest bool
-	// Encrypted specify that the URI contains an encrypted file
-	Encrypted bool
-}
 
 type format int
 
@@ -90,7 +70,7 @@ type RsCopy struct {
 	// Direction specify if the operation is COPY FROM or COPY TO
 	Direction direction
 	// Source is the external storage
-	Source ExternalSource
+	Source adapter.ExternalSource
 	// Format specify the content encoding and options
 	Format SourceFormat
 }
